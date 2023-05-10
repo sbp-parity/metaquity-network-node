@@ -44,6 +44,7 @@ use pallet_transaction_payment::{ConstFeeMultiplier, CurrencyAdapter, Multiplier
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
+use frame_system::EnsureSigned;
 
 /// Import the template pallet.
 pub use pallet_template;
@@ -51,6 +52,10 @@ pub use pallet_template;
 /// An index to a block.
 pub type BlockNumber = u32;
 
+/// Function used in fee configurations
+pub const fn deposit(items: u32, bytes: u32) -> Balance {
+	items as Balance  + (bytes as Balance) * 100 
+}
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
 pub type Signature = MultiSignature;
 
@@ -263,6 +268,24 @@ impl pallet_sudo::Config for Runtime {
 	type RuntimeCall = RuntimeCall;
 }
 
+impl pallet_identity::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+    type Currency = Balances ;
+    // Add one item in storage and take 258 bytes
+	type BasicDeposit = ConstU128<{ deposit(1, 258) }>;
+	// Not add any item to the storage but takes 66 bytes
+	type FieldDeposit = ConstU128<{ deposit(0, 66) }>;
+	// Add one item in storage and take 53 bytes
+	type SubAccountDeposit = ConstU128<{ deposit(1, 53) }>;
+	type MaxSubAccounts = ConstU32<100>;
+	type MaxAdditionalFields = ConstU32<100>;
+	type MaxRegistrars = ConstU32<20>;
+	type Slashed = ();
+	type ForceOrigin = EnsureSigned<Self::AccountId>;
+	type RegistrarOrigin = EnsureSigned<Self::AccountId>;
+	type WeightInfo = ();
+}
+
 /// Configure the pallet-template in pallets/template.
 impl pallet_template::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
@@ -292,7 +315,8 @@ construct_runtime!(
 		Sudo: pallet_sudo,
 		// Include the custom logic from the pallet-template in the runtime.
 		TemplateModule: pallet_template,
-		Utility: pallet_utility
+		Utility: pallet_utility,
+		Identity: pallet_identity,
 	}
 );
 
