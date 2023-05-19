@@ -21,7 +21,7 @@ use sp_runtime::{
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
-use sp_version::RuntimeVersion;
+use sp_version::RuntimeVersion;  
 
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
@@ -72,6 +72,8 @@ pub type Index = u32;
 /// A hash of some data used by the chain.
 pub type Hash = sp_core::H256;
 
+//public type
+pub type AccountPublic = <Signature as Verify>::Signer;
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
 /// the specifics of the runtime. They can then be made to be agnostic over specific formats
 /// of data like extrinsics, allowing for them to continue syncing the network through upgrades
@@ -272,18 +274,26 @@ impl pallet_sudo::Config for Runtime {
 	type RuntimeCall = RuntimeCall;
 }
 
+
+parameter_types! {
+	// Minimum 100bytes
+	pub const BasicDeposit: Balance = 1000 * CENTS;        //258 bytes on-chain
+	pub const FieldDeposit: Balance = 250 * CENTS;         //66 bytes on-chain
+	pub const SubAccountDeposit: Balance = 200 * CENTS;    // 53 bytes on-chain
+	pub const MaxAdditionalFields: u32 = 100;
+	pub const MaxSubAccounts: u32 = 100;
+	pub const MaxRegistrars: u32= 20;
+}
+
 impl pallet_identity::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
     type Currency = Balances ;
-    // Add one item in storage and take 258 bytes
-	type BasicDeposit = ConstU128<{ deposit(1, 258) }>;
-	// Not add any item to the storage but takes 66 bytes
-	type FieldDeposit = ConstU128<{ deposit(0, 66) }>;
-	// Add one item in storage and take 53 bytes
-	type SubAccountDeposit = ConstU128<{ deposit(1, 53) }>;
-	type MaxSubAccounts = ConstU32<100>;
-	type MaxAdditionalFields = ConstU32<100>;
-	type MaxRegistrars = ConstU32<20>;
+	type BasicDeposit = BasicDeposit;
+	type FieldDeposit = FieldDeposit;
+	type SubAccountDeposit = SubAccountDeposit;
+	type MaxSubAccounts = MaxSubAccounts;
+	type MaxAdditionalFields = MaxAdditionalFields;
+	type MaxRegistrars = MaxRegistrars;
 	type Slashed = ();
 	type ForceOrigin = EnsureSigned<Self::AccountId>;
 	type RegistrarOrigin = EnsureSigned<Self::AccountId>;
@@ -352,7 +362,7 @@ impl pallet_nfts::Config for Runtime {
 	/// It needs to be From<MultiSignature> for benchmarking.
 	type OffchainSignature = Signature;
 	/// Using `AccountPublic` here makes it trivial to convert to `AccountId` via `into_account()`.
-	type OffchainPublic = ();
+	type OffchainPublic = AccountPublic;
 	type WeightInfo = ();
 	#[cfg(feature = "runtime-benchmarks")]
 	type Helper = ();
@@ -390,7 +400,7 @@ construct_runtime!(
 		Utility: pallet_utility,
 		Identity: pallet_identity,
 		Assets: pallet_assets,
-		Nfts: pallet_nfts,
+		// Nfts: pallet_nfts,
 	}
 );
 
