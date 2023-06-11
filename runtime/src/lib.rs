@@ -9,7 +9,7 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 use pallet_grandpa::AuthorityId as GrandpaId;
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
+use sp_core::{crypto::KeyTypeId, OpaqueMetadata, Get};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
@@ -344,18 +344,18 @@ impl pallet_nfts::Config for Runtime {
 	type CreateOrigin = AsEnsureOriginWithArg<frame_system::EnsureSigned<Self::AccountId>>;
 	type ForceOrigin = frame_system::EnsureRoot<Self::AccountId>;
 	type Locker = ();
-	type CollectionDeposit = ConstU64<2>;
-	type ItemDeposit = ConstU64<1>;
-	type MetadataDepositBase = ConstU64<1>;
-	type AttributeDepositBase = ConstU64<1>;
-	type DepositPerByte = ConstU64<1>;
+	type CollectionDeposit = ();
+	type ItemDeposit = ();
+	type MetadataDepositBase =  ();
+	type AttributeDepositBase = ();
+	type DepositPerByte =  ();
 	type StringLimit = ConstU32<50>;
 	type KeyLimit = ConstU32<50>;
 	type ValueLimit = ConstU32<50>;
 	type ApprovalsLimit = ConstU32<10>;
 	type ItemAttributesApprovalsLimit = ConstU32<2>;
 	type MaxTips = ConstU32<10>;
-	type MaxDeadlineDuration = ConstU64<10000>;
+	type MaxDeadlineDuration = ();
 	type MaxAttributesPerCall = ConstU32<2>;
 	type Features = Features;
 	/// Off-chain = signature On-chain - therefore no conversion needed.
@@ -400,7 +400,7 @@ construct_runtime!(
 		Utility: pallet_utility,
 		Identity: pallet_identity,
 		Assets: pallet_assets,
-		// Nfts: pallet_nfts,
+		Nfts: pallet_nfts,
 	}
 );
 
