@@ -9,7 +9,7 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 use pallet_grandpa::AuthorityId as GrandpaId;
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-use sp_core::{crypto::KeyTypeId, OpaqueMetadata, Get};
+use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
@@ -137,7 +137,7 @@ pub const DAYS: BlockNumber = HOURS * 24;
 pub const MILLICENTS: Balance = 1_000_000_000;
 pub const CENTS: Balance = 1_000 * MILLICENTS; // assume this is worth about a cent.
 pub const DOLLARS: Balance = 100 * CENTS;
-
+pub const UNITS: Balance = 1;
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
 pub fn native_version() -> NativeVersion {
@@ -333,7 +333,23 @@ impl pallet_assets::Config for Runtime {
 }
 
 parameter_types! {
-	pub storage Features: PalletFeatures = PalletFeatures::all_enabled();
+	pub const UniquesCollectionDeposit: Balance = UNITS /10;
+	pub const UniquesItemDeposit: Balance = UNITS / 1_000;
+	pub const UniquesMetadataDepositsBase: Balance = deposit(1, 129);
+	pub const UniquesAttributeDepositsBase: Balance = deposit(1, 129);
+	pub const UniquesDepositPerByte: Balance = deposit(0, 1);
+}
+
+parameter_types! {
+	pub NftsPalletFeatures: PalletFeatures = PalletFeatures::all_enabled();
+	pub const NftsMaxDeadlineDuration: BlockNumber = 12 * 30 * DAYS;
+
+	// reuse the unique deopsits
+	pub const NftsCollectionDeposit: Balance = UniquesCollectionDeposit::get();
+	pub const NftsItemDeposit: Balance = UniquesItemDeposit::get();
+	pub const NftsMetadataDepositsBase: Balance = UniquesMetadataDepositsBase::get();
+	pub const NftsAttributeDepositsBase: Balance = UniquesAttributeDepositsBase::get();
+	pub const NftsDepositPerByte: Balance = UniquesDepositPerByte::get();
 }
 
 impl pallet_nfts::Config for Runtime {
@@ -344,20 +360,20 @@ impl pallet_nfts::Config for Runtime {
 	type CreateOrigin = AsEnsureOriginWithArg<frame_system::EnsureSigned<Self::AccountId>>;
 	type ForceOrigin = frame_system::EnsureRoot<Self::AccountId>;
 	type Locker = ();
-	type CollectionDeposit = ();
-	type ItemDeposit = ();
-	type MetadataDepositBase =  ();
-	type AttributeDepositBase = ();
-	type DepositPerByte =  ();
+	type CollectionDeposit = NftsCollectionDeposit;
+	type ItemDeposit = NftsItemDeposit;
+	type MetadataDepositBase =  NftsMetadataDepositsBase;
+	type AttributeDepositBase = NftsAttributeDepositsBase;
+	type DepositPerByte = NftsDepositPerByte;
 	type StringLimit = ConstU32<50>;
 	type KeyLimit = ConstU32<50>;
 	type ValueLimit = ConstU32<50>;
 	type ApprovalsLimit = ConstU32<10>;
 	type ItemAttributesApprovalsLimit = ConstU32<2>;
 	type MaxTips = ConstU32<10>;
-	type MaxDeadlineDuration = ();
+	type MaxDeadlineDuration = NftsMaxDeadlineDuration;
 	type MaxAttributesPerCall = ConstU32<2>;
-	type Features = Features;
+	type Features = NftsPalletFeatures;
 	/// Off-chain = signature On-chain - therefore no conversion needed.
 	/// It needs to be From<MultiSignature> for benchmarking.
 	type OffchainSignature = Signature;
