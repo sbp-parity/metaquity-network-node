@@ -384,6 +384,27 @@ impl pallet_nfts::Config for Runtime {
 	type Helper = ();
 }
 
+impl pallet_nft_fractionalization::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Currency = Balances;
+	type RuntimeHoldReason = ();
+	type Deposit = ();
+	type NftCollectionId = u32;
+	type NftId = u32;
+    type AssetBalance: Balances;
+    type AssetId: u32;
+    type Assets = ();
+    type Nfts = ();
+    type PalletId = ();
+    type NewAssetSymbol = ConstU32<64>;
+    type NewAssetName = ConstU32<1000>;
+    type StringLimit =ConstU32<1000>;
+	#[cfg(feature = "runtime-benchmarks")]
+    type BenchmarkHelper = ();
+    type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
+}
+
+
 /// Configure the pallet-template in pallets/template.
 impl pallet_template::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
@@ -411,12 +432,14 @@ construct_runtime!(
 		Balances: pallet_balances,
 		TransactionPayment: pallet_transaction_payment,
 		Sudo: pallet_sudo,
+
 		// Include the custom logic from the pallet-template in the runtime.
-		TemplateModule: pallet_template,
 		Utility: pallet_utility,
 		Identity: pallet_identity,
 		Assets: pallet_assets,
 		Nfts: pallet_nfts,
+		NftFractionalization: pallet_nft_fractionalization,
+		TemplateModule: pallet_template,
 	}
 );
 
