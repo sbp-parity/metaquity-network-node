@@ -384,24 +384,38 @@ impl pallet_nfts::Config for Runtime {
 	type Helper = ();
 }
 
+pub enum HoldReason {
+	/// Used by the NFT Fractionalization Pallet.
+	NftFractionalization,
+}
+
+parameter_types! {
+	pub const NftFractionalizationPalletId: PalletId = PalletId(*b"fraction");
+	pub NewAssetSymbol: BoundedVec<u8, StringLimit> = (*b"FRAC").to_vec().try_into().unwrap();
+	pub NewAssetName: BoundedVec<u8, StringLimit> = (*b"Frac").to_vec().try_into().unwrap();
+	// TODO: remove in the next version of polkadot
+	pub const NftFractionalizationHoldReason: HoldReason = HoldReason::NftFractionalization;
+}
+
 impl pallet_nft_fractionalization::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
+	type Deposit = AssetDeposit;
 	type Currency = Balances;
-	type RuntimeHoldReason = ();
-	type Deposit = ();
-	type NftCollectionId = u32;
-	type NftId = u32;
-    type AssetBalance: Balances;
-    type AssetId: u32;
-    type Assets = ();
-    type Nfts = ();
-    type PalletId = ();
-    type NewAssetSymbol = ConstU32<64>;
-    type NewAssetName = ConstU32<1000>;
-    type StringLimit =ConstU32<1000>;
+	type NftCollectionId = <Self as pallet_nfts::Config>::CollectionId;
+	type NftId = <Self as pallet_nfts::Config>::ItemId;
+	type AssetBalance = <Self as pallet_balances::Config>::Balance;
+	type AssetId = <Self as pallet_assets::Config>::AssetId;
+	type Assets = Assets;
+	type Nfts = Nfts;
+	type PalletId = NftFractionalizationPalletId;
+	type NewAssetSymbol = NewAssetSymbol;
+	type NewAssetName = NewAssetName;
+	type StringLimit = StringLimit;
 	#[cfg(feature = "runtime-benchmarks")]
-    type BenchmarkHelper = ();
-    type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
+	type BenchmarkHelper = ();
+	type WeightInfo = ();
+	// TODO: change to `RuntimeHoldReason` in the next version of polkadot
+	type HoldReason = NftFractionalizationHoldReason;
 }
 
 
