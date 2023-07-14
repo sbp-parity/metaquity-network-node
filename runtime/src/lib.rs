@@ -6,6 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+use codec::{Decode, Encode, MaxEncodedLen};
 use pallet_grandpa::AuthorityId as GrandpaId;
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -21,13 +22,14 @@ use sp_runtime::{
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
-use sp_version::RuntimeVersion;  
+use sp_version::RuntimeVersion;
 
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{
-		ConstU128, ConstU32, ConstU64, ConstU8, KeyOwnerProofSystem, Randomness, StorageInfo, AsEnsureOriginWithArg
+		AsEnsureOriginWithArg, ConstU128, ConstU32, ConstU64, ConstU8, KeyOwnerProofSystem,
+		Randomness, StorageInfo,
 	},
 	weights::{
 		constants::{
@@ -35,26 +37,26 @@ pub use frame_support::{
 		},
 		IdentityFee, Weight,
 	},
-	StorageValue,
+	BoundedVec, PalletId, StorageValue,
 };
 pub use frame_system::Call as SystemCall;
+use frame_system::{EnsureRoot, EnsureSigned};
 pub use pallet_balances::Call as BalancesCall;
+use pallet_nfts::PalletFeatures;
+/// Import the template pallet.
+pub use pallet_template;
 pub use pallet_timestamp::Call as TimestampCall;
 use pallet_transaction_payment::{ConstFeeMultiplier, CurrencyAdapter, Multiplier};
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
-use frame_system::{EnsureSigned, EnsureRoot};
-use pallet_nfts::PalletFeatures;
-/// Import the template pallet.
-pub use pallet_template;
 
 /// An index to a block.
 pub type BlockNumber = u32;
 
 /// Function used in fee configurations
 pub const fn deposit(items: u32, bytes: u32) -> Balance {
-	items as Balance  + (bytes as Balance) * 100 
+	items as Balance + (bytes as Balance) * 100
 }
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
 pub type Signature = MultiSignature;
@@ -254,6 +256,10 @@ impl pallet_balances::Config for Runtime {
 	type ExistentialDeposit = ConstU128<EXISTENTIAL_DEPOSIT>;
 	type AccountStore = System;
 	type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
+	type FreezeIdentifier = ();
+	type MaxFreezes = ();
+	type HoldIdentifier = HoldReason;
+	type MaxHolds = ConstU32<1>;
 }
 
 parameter_types! {
@@ -272,8 +278,8 @@ impl pallet_transaction_payment::Config for Runtime {
 impl pallet_sudo::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeCall = RuntimeCall;
+	type WeightInfo = ();
 }
-
 
 parameter_types! {
 	// Minimum 100bytes
@@ -287,7 +293,7 @@ parameter_types! {
 
 impl pallet_identity::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-    type Currency = Balances ;
+	type Currency = Balances;
 	type BasicDeposit = BasicDeposit;
 	type FieldDeposit = FieldDeposit;
 	type SubAccountDeposit = SubAccountDeposit;
@@ -307,7 +313,6 @@ parameter_types! {
 	pub const MetadataDepositBase: Balance = 10 * DOLLARS;
 	pub const MetadataDepositPerByte: Balance = 1 * DOLLARS;
 }
-
 
 impl pallet_assets::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
@@ -362,7 +367,7 @@ impl pallet_nfts::Config for Runtime {
 	type Locker = ();
 	type CollectionDeposit = NftsCollectionDeposit;
 	type ItemDeposit = NftsItemDeposit;
-	type MetadataDepositBase =  NftsMetadataDepositsBase;
+	type MetadataDepositBase = NftsMetadataDepositsBase;
 	type AttributeDepositBase = NftsAttributeDepositsBase;
 	type DepositPerByte = NftsDepositPerByte;
 	type StringLimit = ConstU32<50>;
@@ -384,6 +389,20 @@ impl pallet_nfts::Config for Runtime {
 	type Helper = ();
 }
 
+/// A reason for placing a hold on funds.
+#[derive(
+	Copy,
+	Clone,
+	Eq,
+	PartialEq,
+	Ord,
+	PartialOrd,
+	Encode,
+	Decode,
+	MaxEncodedLen,
+	Debug,
+	scale_info::TypeInfo,
+)]
 pub enum HoldReason {
 	/// Used by the NFT Fractionalization Pallet.
 	NftFractionalization,
@@ -417,7 +436,6 @@ impl pallet_nft_fractionalization::Config for Runtime {
 	// TODO: change to `RuntimeHoldReason` in the next version of polkadot
 	type HoldReason = NftFractionalizationHoldReason;
 }
-
 
 /// Configure the pallet-template in pallets/template.
 impl pallet_template::Config for Runtime {
@@ -522,6 +540,14 @@ impl_runtime_apis! {
 	impl sp_api::Metadata<Block> for Runtime {
 		fn metadata() -> OpaqueMetadata {
 			OpaqueMetadata::new(Runtime::metadata().into())
+		}
+
+		fn metadata_at_version(version: u32) -> Option<OpaqueMetadata> {
+			Runtime::metadata_at_version(version)
+		}
+
+		fn metadata_versions() -> sp_std::vec::Vec<u32> {
+			Runtime::metadata_versions()
 		}
 	}
 
