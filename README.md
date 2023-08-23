@@ -14,6 +14,12 @@ Depending on your operating system and Rust version, there might be additional p
 Check the [Install](https://docs.substrate.io/install/) instructions for your platform for the most common dependencies.
 Alternatively, you can use one of the [alternative installation](#alternatives-installations) options.
 
+Setup pre-commit hook to check code with [rustfmt](https://github.com/rust-lang/rustfmt) before committing it.
+
+```sh
+ln -sf $PWD/scripts/pre-commit.sh $PWD/.git/hooks/pre-commit
+```
+
 ### Build
 
 Use the following command to build the node without launching it:
