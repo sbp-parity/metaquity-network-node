@@ -14,6 +14,12 @@ Depending on your operating system and Rust version, there might be additional p
 Check the [Install](https://docs.substrate.io/install/) instructions for your platform for the most common dependencies.
 Alternatively, you can use one of the [alternative installation](#alternatives-installations) options.
 
+Setup pre-commit hook to check code with [rustfmt](https://github.com/rust-lang/rustfmt) before committing it.
+
+```sh
+ln -sf $PWD/scripts/pre-commit.sh $PWD/.git/hooks/pre-commit
+```
+
 ### Build
 
 Use the following command to build the node without launching it:
@@ -150,11 +156,6 @@ A FRAME pallet is compromised of a number of blockchain primitives:
 ## Alternatives Installations
 
 Instead of installing dependencies and building this source directly, consider the following alternatives.
-
-### Nix
-
-Install [nix](https://nixos.org/), and optionally [direnv](https://github.com/direnv/direnv) and [lorri](https://github.com/nix-community/lorri) for a fully plug-and-play experience for setting up the development environment.
-To get all the correct dependencies, activate direnv `direnv allow` and lorri `lorri shell`.
 
 ### Docker
 

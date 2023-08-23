@@ -43,8 +43,6 @@ pub use frame_system::Call as SystemCall;
 use frame_system::{EnsureRoot, EnsureSigned};
 pub use pallet_balances::Call as BalancesCall;
 use pallet_nfts::PalletFeatures;
-/// Import the template pallet.
-pub use pallet_template;
 pub use pallet_timestamp::Call as TimestampCall;
 use pallet_transaction_payment::{ConstFeeMultiplier, CurrencyAdapter, Multiplier};
 #[cfg(any(feature = "std", test))]
@@ -437,11 +435,6 @@ impl pallet_nft_fractionalization::Config for Runtime {
 	type HoldReason = NftFractionalizationHoldReason;
 }
 
-/// Configure the pallet-template in pallets/template.
-impl pallet_template::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-}
-
 impl pallet_utility::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeCall = RuntimeCall;
@@ -471,7 +464,6 @@ construct_runtime!(
 		Assets: pallet_assets,
 		Nfts: pallet_nfts,
 		NftFractionalization: pallet_nft_fractionalization,
-		TemplateModule: pallet_template,
 	}
 );
 
