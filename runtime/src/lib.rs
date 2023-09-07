@@ -331,8 +331,6 @@ impl pallet_assets::Config for Runtime {
 	type CallbackHandle = ();
 	type WeightInfo = pallet_assets::weights::SubstrateWeight<Runtime>;
 	type RemoveItemsLimit = ConstU32<1000>;
-	#[cfg(feature = "runtime-benchmarks")]
-	type BenchmarkHelper = ();
 }
 
 parameter_types! {
@@ -383,8 +381,6 @@ impl pallet_nfts::Config for Runtime {
 	/// Using `AccountPublic` here makes it trivial to convert to `AccountId` via `into_account()`.
 	type OffchainPublic = AccountPublic;
 	type WeightInfo = ();
-	#[cfg(feature = "runtime-benchmarks")]
-	type Helper = ();
 }
 
 /// A reason for placing a hold on funds.
