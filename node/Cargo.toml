@@ -1,12 +1,17 @@
 [package]
 name = "metaquity-network"
+# SBP-M1 review: consider resetting version as new project
 version = "4.0.0-dev"
+# SBP-M1 review: update description
 description = "A fresh FRAME-based Substrate node, ready for hacking."
+# SBP-M1 review: add metaquity as author
 authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
+# SBP-M1 review: set homepage
 homepage = "https://substrate.io/"
 edition = "2021"
 license = "Unlicense"
 publish = false
+# SBP-M1 review: update to 'https://github.com/Metaquity-Network/metaquity-network-node'
 repository = "https://github.com/substrate-developer-hub/substrate-node-template/"
 build = "build.rs"
 
@@ -16,7 +21,9 @@ targets = ["x86_64-unknown-linux-gnu"]
 [[bin]]
 name = "metaquity-network"
 
+# SBP-M1 review: consider updating dependencies to new monorepo at https://github.com/paritytech/polkadot-sdk (where applicable, and when ready to move to 1.0)
 [dependencies]
+# SBP-M1 review: update version
 clap = { version = "4.0.9", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"]}
 

@@ -14,6 +14,7 @@ use sp_keyring::Sr25519Keyring;
 use try_runtime_cli::block_building_info::timestamp_with_aura_info;
 
 impl SubstrateCli for Cli {
+	// SBP-M1 review: consider updating name, as it appears within PJS ui
 	fn impl_name() -> String {
 		"Substrate Node".into()
 	}
@@ -30,6 +31,7 @@ impl SubstrateCli for Cli {
 		env!("CARGO_PKG_AUTHORS").into()
 	}
 
+	// SBP-M1 review: consider updating as appropriate
 	fn support_url() -> String {
 		"support.anonymous.an".into()
 	}
