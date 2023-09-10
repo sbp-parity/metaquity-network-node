@@ -1,13 +1,13 @@
 [package]
 name = "metaquity-network-runtime"
-version = "4.0.0-dev"
-description = "A fresh FRAME-based Substrate node, ready for hacking."
-authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
-homepage = "https://substrate.io/"
+version = "0.0.1-dev"
+description = "Metaquity Network runtime"
+authors = ["Metaquity Network <https://www.metaquity.xyz/>"]
+homepage = "https://www.metaquity.xyz/"
 edition = "2021"
 license = "Unlicense"
 publish = false
-repository = "https://github.com/substrate-developer-hub/substrate-node-template/"
+repository = "https://github.com/Metaquity-Network/metaquity-network-node"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
@@ -62,26 +62,31 @@ substrate-wasm-builder = { version = "5.0.0-dev", default-features = false, git 
 
 [features]
 default = ["std"]
-std = [ "frame-try-runtime?/std",
-        "frame-system-benchmarking?/std",
-        "frame-benchmarking?/std",
+std = [ 
         "codec/std", "scale-info/std", 
+
+        "frame-benchmarking?/std",
         "frame-executive/std", 
         "frame-support/std", 
+        "frame-system-benchmarking?/std",
         "frame-system-rpc-runtime-api/std",
         "frame-system/std",
         "frame-try-runtime/std",
+        "frame-try-runtime?/std",
+
+        "pallet-assets/std",
         "pallet-aura/std",
         "pallet-balances/std",
         "pallet-grandpa/std",
         "pallet-identity/std",
+        "pallet-nft-fractionalization/std",
+        "pallet-nfts/std",
         "pallet-sudo/std",
         "pallet-timestamp/std",
         "pallet-transaction-payment-rpc-runtime-api/std",
         "pallet-transaction-payment/std",
-        "pallet-assets/std",
-        "pallet-nfts/std",
-        "pallet-nft-fractionalization/std",
+        "pallet-utility/std",
+
         "sp-api/std",
         "sp-block-builder/std",
         "sp-consensus-aura/std",
@@ -94,8 +99,8 @@ std = [ "frame-try-runtime?/std",
         "sp-std/std",
         "sp-transaction-pool/std",
         "sp-version/std",
+
         "substrate-wasm-builder",
-        "pallet-utility/std"
         ]
 runtime-benchmarks = [
         "frame-benchmarking/runtime-benchmarks",
@@ -104,21 +109,21 @@ runtime-benchmarks = [
         "frame-system/runtime-benchmarks",
         "pallet-balances/runtime-benchmarks",
         "pallet-grandpa/runtime-benchmarks",
+        "pallet-nft-fractionalization/runtime-benchmarks",
         "pallet-sudo/runtime-benchmarks",
         "pallet-timestamp/runtime-benchmarks",
         "sp-runtime/runtime-benchmarks",
-        "pallet-nft-fractionalization/runtime-benchmarks",
         ]
 try-runtime = [
-        "frame-try-runtime/try-runtime",
         "frame-executive/try-runtime",
-        "frame-system/try-runtime",
         "frame-support/try-runtime",
+        "frame-system/try-runtime",
+        "frame-try-runtime/try-runtime",
         "pallet-aura/try-runtime",
         "pallet-balances/try-runtime",
         "pallet-grandpa/try-runtime",
+        "pallet-nft-fractionalization/try-runtime",
         "pallet-sudo/try-runtime",
         "pallet-timestamp/try-runtime",
         "pallet-transaction-payment/try-runtime",
-        "pallet-nft-fractionalization/try-runtime",
         ]

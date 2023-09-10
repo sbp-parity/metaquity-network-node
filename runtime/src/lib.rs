@@ -72,8 +72,6 @@ pub type Nonce = u32;
 /// A hash of some data used by the chain.
 pub type Hash = sp_core::H256;
 
-//public type
-pub type AccountPublic = <Signature as Verify>::Signer;
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
 /// the specifics of the runtime. They can then be made to be agnostic over specific formats
 /// of data like extrinsics, allowing for them to continue syncing the network through upgrades
@@ -105,13 +103,8 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("metaquity-network"),
 	impl_name: create_runtime_str!("metaquity-network"),
 	authoring_version: 1,
-	// The version of the runtime specification. A full node will not attempt to use its native
-	//   runtime in substitute for the on-chain Wasm runtime unless all of `spec_name`,
-	//   `spec_version`, and `authoring_version` are the same between Wasm and native.
-	// This value is set to 100 to notify Polkadot-JS App (https://polkadot.js.org/apps) to use
-	//   the compatible custom types.
-	spec_version: 101,
-	impl_version: 1,
+	spec_version: 100,
+	impl_version: 0,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
 	state_version: 1,
@@ -377,8 +370,7 @@ impl pallet_nfts::Config for Runtime {
 	/// Off-chain = signature On-chain - therefore no conversion needed.
 	/// It needs to be From<MultiSignature> for benchmarking.
 	type OffchainSignature = Signature;
-	/// Using `AccountPublic` here makes it trivial to convert to `AccountId` via `into_account()`.
-	type OffchainPublic = AccountPublic;
+	type OffchainPublic = <Signature as Verify>::Signer;
 	type WeightInfo = ();
 }
 
