@@ -1,8 +1,7 @@
 [package]
 name = "metaquity-network-runtime"
 version = "0.1.0"
-# SBP-M1 review: update description
-description = "Metaquity Network runtime"
+description = "Metaquity Network runtime."
 # SBP-M1 review: add metaquity as author
 authors = ["Metaquity Network <https://www.metaquity.xyz/>"]
 # SBP-M1 review: set homepage
