@@ -54,8 +54,9 @@ pub type BlockNumber = u32;
 
 /// Function used in fee configurations
 pub const fn deposit(items: u32, bytes: u32) -> Balance {
-	// SBP-M1 review: implementation may increase likelihood of chain storage bloat by returning a relatively small value for a deposit, based on the number of decimals currently used on the chain.
-	// SBP-M1 review: typical implementations include an additional multiplier. See deposit function implementations within runtimes at https://github.com/paritytech/polkadot-sdk/tree/master/polkadot/runtime and https://github.com/paritytech/extended-parachain-template/blob/main/runtime/mainnet/src/lib.rs#L223 as examples.
+	// SBP-M1 review: implementation may increase likelihood of chain storage bloat by returning a
+	// relatively small value for a deposit, based on the number of decimals currently used on the
+	// chain. SBP-M1 review: typical implementations include an additional multiplier. See deposit function implementations within runtimes at https://github.com/paritytech/polkadot-sdk/tree/master/polkadot/runtime and https://github.com/paritytech/extended-parachain-template/blob/main/runtime/mainnet/src/lib.rs#L223 as examples.
 	items as Balance + (bytes as Balance) * 100
 }
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
@@ -119,7 +120,8 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 ///
 /// Change this to adjust the block time.
 // SBP-M1 review: consider effects of block time increasing when migrating from solo chain to parachain (if applicable): https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/runtime/common/src/lib.rs#L22
-// SBP-M1 review: note also that `asynchronous backing` is set to reduce parachain block times to 6 seconds once available
+// SBP-M1 review: note also that `asynchronous backing` is set to reduce parachain block times to 6
+// seconds once available
 pub const MILLISECS_PER_BLOCK: u64 = 6000;
 
 // NOTE: Currently it is not possible to change the slot duration after the chain has started.
@@ -134,7 +136,7 @@ pub const DAYS: BlockNumber = HOURS * 24;
 // SBP-M1 review: consider generic unit naming (or MQTY instead of UNITS/DOLLARS) - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/runtime/mainnet/src/lib.rs#L218
 pub const MILLICENTS: Balance = 1_000_000_000;
 pub const CENTS: Balance = 1_000 * MILLICENTS; // assume this is worth about a cent.
-// SBP-M1 review: is 14 decimal places intentional? 18 is specified at https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json#L882. Suggest setting UNITS/DOLLARS/MQTY to 18 decimal value and then divide accordingly for sub-units for clarity. Consider adding additional metadata in the chain_spec.rs as well - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/node/src/chain_spec.rs#L136
+											   // SBP-M1 review: is 14 decimal places intentional? 18 is specified at https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json#L882. Suggest setting UNITS/DOLLARS/MQTY to 18 decimal value and then divide accordingly for sub-units for clarity. Consider adding additional metadata in the chain_spec.rs as well - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/node/src/chain_spec.rs#L136
 pub const DOLLARS: Balance = 100 * CENTS;
 // SBP-M1 review: should UNITS simply be a type alias to DOLLARS?
 pub const UNITS: Balance = 1;
@@ -262,7 +264,8 @@ impl pallet_balances::Config for Runtime {
 	type FreezeIdentifier = ();
 	type MaxFreezes = ();
 	type RuntimeHoldReason = RuntimeHoldReason;
-  // SBP-M1 review: add comment noting why this is set to one - i.e. HoldReason::NftFractionalization
+	// SBP-M1 review: add comment noting why this is set to one - i.e.
+	// HoldReason::NftFractionalization
 	type MaxHolds = ConstU32<1>;
 }
 
@@ -279,7 +282,8 @@ impl pallet_transaction_payment::Config for Runtime {
 	type WeightToFee = IdentityFee<Balance>;
 	// SBP-M1 review: consider non-default length to fee mechanisms
 	type LengthToFee = IdentityFee<Balance>;
-	// SBP-M1 review: consider non-default fee multiplier update mechanisms - e.g. SlowAdjustingFeeUpdate
+	// SBP-M1 review: consider non-default fee multiplier update mechanisms - e.g.
+	// SlowAdjustingFeeUpdate
 	type FeeMultiplierUpdate = ConstFeeMultiplier<FeeMultiplier>;
 }
 
@@ -340,9 +344,11 @@ impl pallet_assets::Config for Runtime {
 	type AssetId = u32;
 	type AssetIdParameter = codec::Compact<u32>;
 	type Currency = Balances;
-	// SBP-M1 review: consider whether anyone should be able to permissionlessly create an asset - should probably be set to MQTY admin origin only.
+	// SBP-M1 review: consider whether anyone should be able to permissionlessly create an asset -
+	// should probably be set to MQTY admin origin only.
 	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
-	// SBP-M1 review: may need to be root or MQTY admin origin to allow force_set_metadata for fractionalised assets - see EitherOf<L, R>.
+	// SBP-M1 review: may need to be root or MQTY admin origin to allow force_set_metadata for
+	// fractionalised assets - see EitherOf<L, R>.
 	type ForceOrigin = EnsureRoot<AccountId>;
 	type AssetDeposit = AssetDeposit;
 	// SBP-M1 review: re-consider this after adjusting the units mentioned above
@@ -359,7 +365,8 @@ impl pallet_assets::Config for Runtime {
 	type RemoveItemsLimit = ConstU32<1000>;
 }
 
-// SBP-M1 review: pallet_uniques is not used, so these parameters can be removed, with values moved to Nfts* parameter types
+// SBP-M1 review: pallet_uniques is not used, so these parameters can be removed, with values moved
+// to Nfts* parameter types
 parameter_types! {
 	// SBP-M1 review: UNITS is 1, resulting in deposit of zero. This needs to be fixed.
 	// SBP-M1 review: only used once, move implementation to usage to remove this parameter
@@ -398,8 +405,12 @@ impl pallet_nfts::Config for Runtime {
 	type CollectionId = u32;
 	type ItemId = u32;
 	type Currency = Balances;
-	// SBP-M1 review: consider whether any user with access to public chain should be able to permissionlessly create collections, which is currently the case here. The use-case/UI screenshots imply that asset verification is required, so assume the onchain creation of collections should only be carried out by MQTY admin (e.g. configure CreateOrigin as MQTY admin) and then assets (NFTs) minted by the collection admin once verified.
-	// SBP-M1 review: unnecessary qualification (frame_system::)
+	// SBP-M1 review: consider whether any user with access to public chain should be able to
+	// permissionlessly create collections, which is currently the case here. The use-case/UI
+	// screenshots imply that asset verification is required, so assume the onchain creation of
+	// collections should only be carried out by MQTY admin (e.g. configure CreateOrigin as MQTY
+	// admin) and then assets (NFTs) minted by the collection admin once verified. SBP-M1 review:
+	// unnecessary qualification (frame_system::)
 	type CreateOrigin = AsEnsureOriginWithArg<frame_system::EnsureSigned<Self::AccountId>>;
 	// SBP-M1 review: unnecessary qualification (frame_system::)
 	type ForceOrigin = frame_system::EnsureRoot<Self::AccountId>;
@@ -454,12 +465,17 @@ parameter_types! {
 
 // SBP-M1 review: consider matching member order with that of trait
 impl pallet_nft_fractionalization::Config for Runtime {
-	// SBP-M1 review: whilst it resolves to the same type, consider using <Self as pallet_assets::Config>::Balance as it would better align with AssetId and Assets type definitions below. I see the Asset Hub on Kusama is configured this way though.
+	// SBP-M1 review: whilst it resolves to the same type, consider using <Self as
+	// pallet_assets::Config>::Balance as it would better align with AssetId and Assets type
+	// definitions below. I see the Asset Hub on Kusama is configured this way though.
 	type AssetBalance = <Self as pallet_balances::Config>::Balance;
 	type AssetId = <Self as pallet_assets::Config>::AssetId;
 	type Assets = Assets;
 	type Currency = Balances;
-  // SBP-M1 review: uses AssetDeposit rather than NftsCollectionDeposit and cannot determine whether this is intentional. I see the Asset Hub on Kusama is configured this way though. Suggest adding NftFractionalizationDeposit alias to AssetDeposit or NftsCollectionDeposit with a comment as to why it is being used in your runtime for clarity.
+	// SBP-M1 review: uses AssetDeposit rather than NftsCollectionDeposit and cannot determine
+	// whether this is intentional. I see the Asset Hub on Kusama is configured this way though.
+	// Suggest adding NftFractionalizationDeposit alias to AssetDeposit or NftsCollectionDeposit
+	// with a comment as to why it is being used in your runtime for clarity.
 	type Deposit = AssetDeposit;
 	type NewAssetName = NewAssetName;
 	type NewAssetSymbol = NewAssetSymbol;
@@ -485,7 +501,7 @@ impl pallet_utility::Config for Runtime {
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub struct Runtime {
-    // SBP-M1 review: explicit pallet indices preferred - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/runtime/mainnet/src/lib.rs#L564
+		// SBP-M1 review: explicit pallet indices preferred - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/runtime/mainnet/src/lib.rs#L564
 		System: frame_system,
 		Timestamp: pallet_timestamp,
 		Aura: pallet_aura,
@@ -546,7 +562,7 @@ mod benches {
 		[pallet_balances, Balances]
 		[pallet_timestamp, Timestamp]
 		[pallet_sudo, Sudo]
-    // SBP-M1 review: add missing pallets: benchmarks should be re-run on reference hardware based on how they are configured/used by your runtime
+	// SBP-M1 review: add missing pallets: benchmarks should be re-run on reference hardware based on how they are configured/used by your runtime
 	);
 }
 
