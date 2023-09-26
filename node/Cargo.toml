@@ -1,12 +1,17 @@
 [package]
 name = "metaquity-network"
+# SBP-M1 review: consider resetting version as new project
 version = "0.0.1-dev"
+# SBP-M1 review: update description
 description = "Metaquity Network is the world's first permissioned blockchain and DeFi protocol for Alternative Real World Assets (ARWA)"
+# SBP-M1 review: add metaquity as author
 authors = ["Metaquity Network <https://www.metaquity.xyz/>"]
+# SBP-M1 review: set homepage
 homepage = "https://www.metaquity.xyz/"
 edition = "2021"
 license = "Unlicense"
 publish = false
+# SBP-M1 review: update to 'https://github.com/Metaquity-Network/metaquity-network-node'
 repository = "https://github.com/Metaquity-Network/metaquity-network-node/"
 build = "build.rs"
 
@@ -16,7 +21,10 @@ targets = ["x86_64-unknown-linux-gnu"]
 [[bin]]
 name = "metaquity-network"
 
+# SBP-M1 review: consider updating dependencies to new monorepo at https://github.com/paritytech/polkadot-sdk (where applicable, and when ready to move to 1.0)
 [dependencies]
+# @khssnv: updated, but remains relevant
+# SBP-M1 review: update version
 clap = { version = "4.2.5", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"]}
 

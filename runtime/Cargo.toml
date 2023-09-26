@@ -1,19 +1,26 @@
 [package]
 name = "metaquity-network-runtime"
+# SBP-M1 review: consider resetting version as new project
 version = "0.0.1-dev"
+# SBP-M1 review: update description
 description = "Metaquity Network runtime"
+# SBP-M1 review: add metaquity as author
 authors = ["Metaquity Network <https://www.metaquity.xyz/>"]
+# SBP-M1 review: set homepage
 homepage = "https://www.metaquity.xyz/"
 edition = "2021"
 license = "Unlicense"
 publish = false
+# SBP-M1 review: update to 'https://github.com/Metaquity-Network/metaquity-network-node'
 repository = "https://github.com/Metaquity-Network/metaquity-network-node"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
+# SBP-M1 review: consider updating dependencies to new monorepo at https://github.com/paritytech/polkadot-sdk (where applicable, and when ready to move to 1.0)
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
+# SBP-M1 review: update version
 scale-info = { version = "2.1.1", default-features = false, features = ["derive"] }
 
 # nft dependencies
@@ -63,6 +70,7 @@ substrate-wasm-builder = { version = "5.0.0-dev", default-features = false, git 
 [features]
 default = ["std"]
 std = [ 
+        # SBP-M1 review: separate line
         "codec/std", "scale-info/std", 
 
         "frame-benchmarking?/std",
@@ -74,6 +82,7 @@ std = [
         "frame-try-runtime/std",
         "frame-try-runtime?/std",
 
+        # SBP-M1 review: consider sorting alphabetically along with other pallet-* above
         "pallet-assets/std",
         "pallet-aura/std",
         "pallet-balances/std",
@@ -85,6 +94,7 @@ std = [
         "pallet-timestamp/std",
         "pallet-transaction-payment-rpc-runtime-api/std",
         "pallet-transaction-payment/std",
+        # SBP-M1 review: group with pallets above
         "pallet-utility/std",
 
         "sp-api/std",
@@ -99,7 +109,6 @@ std = [
         "sp-std/std",
         "sp-transaction-pool/std",
         "sp-version/std",
-
         "substrate-wasm-builder",
         ]
 runtime-benchmarks = [
@@ -109,6 +118,7 @@ runtime-benchmarks = [
         "frame-system/runtime-benchmarks",
         "pallet-balances/runtime-benchmarks",
         "pallet-grandpa/runtime-benchmarks",
+        # SBP-M1 review: group with pallets above
         "pallet-nft-fractionalization/runtime-benchmarks",
         "pallet-sudo/runtime-benchmarks",
         "pallet-timestamp/runtime-benchmarks",
@@ -122,6 +132,7 @@ try-runtime = [
         "pallet-aura/try-runtime",
         "pallet-balances/try-runtime",
         "pallet-grandpa/try-runtime",
+        # SBP-M1 review: consider sorting alphabetically
         "pallet-nft-fractionalization/try-runtime",
         "pallet-sudo/try-runtime",
         "pallet-timestamp/try-runtime",
