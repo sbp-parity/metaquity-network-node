@@ -2,10 +2,9 @@
 name = "metaquity-network"
 version = "0.1.0"
 description = "Metaquity Network is the world's first permissioned blockchain and DeFi protocol for Alternative Real World Assets (ARWA)."
-# SBP-M1 review: add metaquity as author
-authors = ["Metaquity Network <https://www.metaquity.xyz/>"]
+authors.workspace = true
+edition.workspace = true
 homepage = "https://www.metaquity.xyz/"
-edition = "2021"
 license = "Unlicense"
 publish = false
 repository.workspace = true

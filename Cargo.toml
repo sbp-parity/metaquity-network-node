@@ -1,4 +1,6 @@
 [workspace.package]
+authors = ["Metaquity Network <hello@metaquity.xyz>"]
+edition = "2021"
 repository = "https://github.com/Metaquity-Network/metaquity-network-node"
 
 [workspace]
