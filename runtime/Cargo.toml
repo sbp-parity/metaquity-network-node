@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Metaquity Network runtime."
 # SBP-M1 review: add metaquity as author
 authors = ["Metaquity Network <https://www.metaquity.xyz/>"]
-# SBP-M1 review: set homepage
 homepage = "https://www.metaquity.xyz/"
 edition = "2021"
 license = "Unlicense"
