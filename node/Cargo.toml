@@ -1,7 +1,6 @@
 [package]
 name = "metaquity-network"
-# SBP-M1 review: consider resetting version as new project
-version = "0.0.1-dev"
+version = "0.1.0"
 # SBP-M1 review: update description
 description = "Metaquity Network is the world's first permissioned blockchain and DeFi protocol for Alternative Real World Assets (ARWA)"
 # SBP-M1 review: add metaquity as author
@@ -67,7 +66,7 @@ frame-benchmarking = { version = "4.0.0-dev", git = "https://github.com/parityte
 frame-benchmarking-cli = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git",  branch = "polkadot-v1.0.0"}
 
 # Local Dependencies
-metaquity-network-runtime = { version = "0.0.1-dev", path = "../runtime" }
+metaquity-network-runtime = { version = "0.1.0", path = "../runtime" }
 
 # CLI-specific dependencies
 try-runtime-cli = { version = "0.10.0-dev", optional = true, git = "https://github.com/paritytech/substrate.git",  branch = "polkadot-v1.0.0"}
