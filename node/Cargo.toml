@@ -8,8 +8,7 @@ homepage = "https://www.metaquity.xyz/"
 edition = "2021"
 license = "Unlicense"
 publish = false
-# SBP-M1 review: update to 'https://github.com/Metaquity-Network/metaquity-network-node'
-repository = "https://github.com/Metaquity-Network/metaquity-network-node/"
+repository.workspace = true
 build = "build.rs"
 
 [package.metadata.docs.rs]

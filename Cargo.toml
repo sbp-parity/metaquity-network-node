@@ -1,3 +1,6 @@
+[workspace.package]
+repository = "https://github.com/Metaquity-Network/metaquity-network-node"
+
 [workspace]
 members = [
     "node",
