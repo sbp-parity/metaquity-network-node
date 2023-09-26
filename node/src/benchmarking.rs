@@ -82,12 +82,8 @@ impl frame_benchmarking_cli::ExtrinsicBuilder for TransferKeepAliveBuilder {
 		let extrinsic: OpaqueExtrinsic = create_benchmark_extrinsic(
 			self.client.as_ref(),
 			acc,
-			BalancesCall::transfer_keep_alive {
-				dest: self.dest.clone().into(),
-				// SBP-M1 review: unnecessary .into()?
-				value: self.value.into(),
-			}
-			.into(),
+			BalancesCall::transfer_keep_alive { dest: self.dest.clone().into(), value: self.value }
+				.into(),
 			nonce,
 		)
 		.into();
@@ -144,11 +140,10 @@ pub fn create_benchmark_extrinsic(
 	let signature = raw_payload.using_encoded(|e| sender.sign(e));
 
 	runtime::UncheckedExtrinsic::new_signed(
-		// SBP-M1 review: unnecessary `.clone()`s ?
-		call.clone(),
+		call,
 		sp_runtime::AccountId32::from(sender.public()).into(),
-		runtime::Signature::Sr25519(signature.clone()),
-		extra.clone(),
+		runtime::Signature::Sr25519(signature),
+		extra,
 	)
 }
 
