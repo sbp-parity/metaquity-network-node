@@ -1,6 +1,5 @@
 [toolchain]
-# SBP-M1 review: consider matching the Rust version used for the corresponding Substrate/Polkadot release used (see https://github.com/paritytech/polkadot/releases/tag/v0.9.43 for specifics)
-channel = "nightly-2023-08-18"
+channel = "nightly-2023-05-22"
 components = [
 	"cargo",
 	"clippy",
