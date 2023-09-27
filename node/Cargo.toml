@@ -18,10 +18,8 @@ name = "metaquity-network"
 
 # SBP-M1 review: consider updating dependencies to new monorepo at https://github.com/paritytech/polkadot-sdk (where applicable, and when ready to move to 1.0)
 [dependencies]
-# @khssnv: updated, but remains relevant
-# SBP-M1 review: update version
-clap = { version = "4.2.5", features = ["derive"] }
-futures = { version = "0.3.21", features = ["thread-pool"]}
+clap = { version = "4.4.5", features = ["derive"] }
+futures = { version = "0.3.28", features = ["thread-pool"]}
 
 sc-cli = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git",  branch = "polkadot-v1.0.0" }
 sp-core = { version = "21.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
