@@ -14,9 +14,8 @@ use sp_keyring::Sr25519Keyring;
 use try_runtime_cli::block_building_info::timestamp_with_aura_info;
 
 impl SubstrateCli for Cli {
-	// SBP-M1 review: consider updating name, as it appears within PJS ui
 	fn impl_name() -> String {
-		"Metaquity network Node".into()
+		"Metaquity Network".into()
 	}
 
 	fn impl_version() -> String {
