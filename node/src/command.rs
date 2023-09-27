@@ -30,7 +30,6 @@ impl SubstrateCli for Cli {
 		env!("CARGO_PKG_AUTHORS").into()
 	}
 
-	// SBP-M1 review: consider updating as appropriate
 	fn support_url() -> String {
 		"https://github.com/metaquity-network/metaquity-network-node/issues/new".into()
 	}
