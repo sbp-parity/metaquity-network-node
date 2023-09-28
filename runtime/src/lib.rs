@@ -137,8 +137,7 @@ pub const MICROMQTY: Balance = 1_000_000_000_000;
 pub const MILLIMQTY: Balance = 1_000 * MICROMQTY;
 // SBP-M1 review: is 14 decimal places intentional? 18 is specified at https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json#L882. Suggest setting UNITS/DOLLARS/MQTY to 18 decimal value and then divide accordingly for sub-units for clarity. Consider adding additional metadata in the chain_spec.rs as well - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/node/src/chain_spec.rs#L136
 pub const MQTY: Balance = 1_000 * MILLIMQTY;
-// SBP-M1 review: should UNITS simply be a type alias to DOLLARS?
-pub const UNITS: Balance = 1;
+
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
 pub fn native_version() -> NativeVersion {
@@ -295,11 +294,14 @@ impl pallet_sudo::Config for Runtime {
 parameter_types! {
 	// Minimum 100bytes
 	// SBP-M1 review: consider using deposit() function for consistency with other pallets deposits (and as per Polkadot runtime).
-	pub const BasicDeposit: Balance = 1000 * CENTS;        //258 bytes on-chain
+	// @khssnv: ToDo: adjust
+	pub const BasicDeposit: Balance = 10 * MQTY;        //258 bytes on-chain
 	// SBP-M1 review: consider using deposit() function for consistency with other pallets deposits (and as per Polkadot runtime).
-	pub const FieldDeposit: Balance = 250 * CENTS;         //66 bytes on-chain
+	// @khssnv: ToDo: adjust
+	pub const FieldDeposit: Balance = 2 * MQTY;         //66 bytes on-chain
 	// SBP-M1 review: consider using deposit() function for consistency with other pallets deposits (and as per Polkadot runtime).
-	pub const SubAccountDeposit: Balance = 200 * CENTS;    // 53 bytes on-chain
+	// @khssnv: ToDo: adjust
+	pub const SubAccountDeposit: Balance = 2 * MQTY;    // 53 bytes on-chain
 	pub const MaxAdditionalFields: u32 = 100;
 	pub const MaxSubAccounts: u32 = 100;
 	pub const MaxRegistrars: u32= 20;
@@ -325,14 +327,14 @@ impl pallet_identity::Config for Runtime {
 
 parameter_types! {
 	// SBP-M1 review: re-consider value after adjusting units mentioned above.
-	pub const AssetDeposit: Balance = 100 * DOLLARS;
+	pub const AssetDeposit: Balance = 100 * MQTY;
 	// SBP-M1 review: prefer inlining if type only used once - e.g. ConstU128. Also re-consider value after adjusting units mentioned above.
-	pub const ApprovalDeposit: Balance = 1 * DOLLARS;
+	pub const ApprovalDeposit: Balance = 1 * MQTY;
 	pub const StringLimit: u32 = 50;
 	// SBP-M1 review: prefer inlining if type only used once - e.g. ConstU128. Also re-consider value after adjusting units mentioned above.
-	pub const MetadataDepositBase: Balance = 10 * DOLLARS;
+	pub const MetadataDepositBase: Balance = 10 * MQTY;
 	// SBP-M1 review: prefer inlining if type only used once - e.g. ConstU128. Also re-consider value after adjusting units mentioned above.
-	pub const MetadataDepositPerByte: Balance = 1 * DOLLARS;
+	pub const MetadataDepositPerByte: Balance = 1 * MQTY;
 }
 
 // SBP-M1 review: consider matching member order with that of trait
@@ -351,7 +353,7 @@ impl pallet_assets::Config for Runtime {
 	type ForceOrigin = EnsureRoot<AccountId>;
 	type AssetDeposit = AssetDeposit;
 	// SBP-M1 review: re-consider this after adjusting the units mentioned above
-	type AssetAccountDeposit = ConstU128<DOLLARS>;
+	type AssetAccountDeposit = ConstU128<MQTY>;
 	type MetadataDepositBase = MetadataDepositBase;
 	type MetadataDepositPerByte = MetadataDepositPerByte;
 	type ApprovalDeposit = ApprovalDeposit;
@@ -369,10 +371,10 @@ impl pallet_assets::Config for Runtime {
 parameter_types! {
 	// SBP-M1 review: UNITS is 1, resulting in deposit of zero. This needs to be fixed.
 	// SBP-M1 review: only used once, move implementation to usage to remove this parameter
-	pub const UniquesCollectionDeposit: Balance = UNITS /10;
+	pub const UniquesCollectionDeposit: Balance = MQTY / 10;
 	// SBP-M1 review: UNITS is 1, resulting in deposit of zero. This needs to be fixed.
 	// SBP-M1 review: only used once, move implementation to usage to remove this parameter
-	pub const UniquesItemDeposit: Balance = UNITS / 1_000;
+	pub const UniquesItemDeposit: Balance = MQTY / 1_000;
 	// SBP-M1 review: only used once, move implementation to usage to remove this parameter
 	// SBP-M1 review: provide justification as to how 129 is determined. I do see that it is configured this way on Asset Hub on Polkadot/Kusama though.
 	pub const UniquesMetadataDepositsBase: Balance = deposit(1, 129);
