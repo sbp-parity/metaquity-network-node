@@ -1,8 +1,10 @@
-doc
-**target*
-.vscode/
-.idea/
+.git
+**/target/
+**/*.txt
+**/*.md
+/docker/
 Dockerfile
-.dockerignore
-.local
-.env*
+!/target/release/polkadot-collator
+
+# dotfiles in the repo root
+/.*
