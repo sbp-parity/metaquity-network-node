@@ -4,7 +4,7 @@ version = "4.0.0-dev"
 description = "FRAME pallet to wrap council calls providing root origin to the council."
 authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
 homepage = "https://substrate.io"
-edition = "2021"
+edition.workspace = true
 license = "Unlicense"
 publish = false
 

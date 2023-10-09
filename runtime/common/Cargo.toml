@@ -1,10 +1,10 @@
 [package]
-authors = ["Anonymous"]
+authors.workspace = true
 description = "Runtime Common"
-edition = "2021"
+edition.workspace = true
 license = "Unlicense"
 name = "runtime-common"
-repository = "https://github.com/paritytech/extended-parachain-template"
+repository.workspace = true
 version = "1.0.0"
 
 [package.metadata.docs.rs]
