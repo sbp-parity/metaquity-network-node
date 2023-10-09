@@ -203,10 +203,10 @@ impl_opaque_keys! {
 
 #[sp_version::runtime_version]
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-	spec_name: create_runtime_str!("mainnet"),
-	impl_name: create_runtime_str!("mainnet"),
+	spec_name: create_runtime_str!("metaquity"),
+	impl_name: create_runtime_str!("metaquity"),
 	authoring_version: 1,
-	spec_version: 1000,
+	spec_version: 100,
 	impl_version: 0,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
