@@ -105,7 +105,7 @@ pub type Executive = frame_executive::Executive<
 >;
 
 pub mod fee {
-	use super::{Balance, ExtrinsicBaseWeight, MILLIUNIT};
+	use super::{Balance, ExtrinsicBaseWeight, MILLIMQTY};
 	use frame_support::weights::{
 		FeePolynomial, Weight, WeightToFeeCoefficient, WeightToFeeCoefficients,
 		WeightToFeePolynomial,
@@ -147,9 +147,9 @@ pub mod fee {
 	impl WeightToFeePolynomial for RefTimeToFee {
 		type Balance = Balance;
 		fn polynomial() -> WeightToFeeCoefficients<Self::Balance> {
-			// in Rococo, extrinsic base weight (smallest non-zero weight) is mapped to 1 MILLIUNIT:
-			// in our template, we map to 1/10 of that, or 1/10 MILLIUNIT
-			let p = MILLIUNIT / 10;
+			// in Rococo, extrinsic base weight (smallest non-zero weight) is mapped to 1 MILLIMQTY:
+			// in our template, we map to 1/10 of that, or 1/10 MILLIMQTY
+			let p = MILLIMQTY / 10;
 			let q = 100 * Balance::from(ExtrinsicBaseWeight::get().ref_time());
 			smallvec![WeightToFeeCoefficient {
 				degree: 1,
@@ -166,7 +166,7 @@ pub mod fee {
 		type Balance = Balance;
 		fn polynomial() -> WeightToFeeCoefficients<Self::Balance> {
 			// Map 10kb proof to 1 CENT.
-			let p = MILLIUNIT / 10;
+			let p = MILLIMQTY / 10;
 			let q = 10_000;
 
 			smallvec![WeightToFeeCoefficient {
@@ -213,14 +213,15 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	state_version: 1,
 };
 
-pub const MICROUNIT: Balance = 1_000_000;
-pub const MILLIUNIT: Balance = 1_000 * MICROUNIT;
-pub const UNIT: Balance = 1_000 * MILLIUNIT;
+pub const MICROMQTY: Balance = 1_000_000_000_000;
+pub const MILLIMQTY: Balance = 1_000 * MICROMQTY;
+// SBP-M1 review: is 14 decimal places intentional? 18 is specified at https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json#L882. Suggest setting UNITS/DOLLARS/MQTY to 18 decimal value and then divide accordingly for sub-units for clarity. Consider adding additional metadata in the chain_spec.rs as well - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/node/src/chain_spec.rs#L136
+pub const MQTY: Balance = 1_000 * MILLIMQTY;
 
-pub const EXISTENTIAL_DEPOSIT: Balance = MILLIUNIT;
+pub const EXISTENTIAL_DEPOSIT: Balance = MILLIMQTY;
 
 pub const fn deposit(items: u32, bytes: u32) -> Balance {
-	(items as Balance * 20 * UNIT + (bytes as Balance) * 100 * MICROUNIT) / 100
+	(items as Balance * 20 * MQTY + (bytes as Balance) * 100 * MICROMQTY) / 100
 }
 
 /// The version information used to identify this runtime when compiled natively.
@@ -352,7 +353,7 @@ impl pallet_balances::Config for Runtime {
 }
 
 parameter_types! {
-	pub const AssetDeposit: Balance = 10 * UNIT;
+	pub const AssetDeposit: Balance = 10 * MQTY;
 	pub const AssetAccountDeposit: Balance = deposit(1, 16);
 	pub const ApprovalDeposit: Balance = EXISTENTIAL_DEPOSIT;
 	pub const StringLimit: u32 = 50;
@@ -385,7 +386,7 @@ impl pallet_assets::Config for Runtime {
 
 parameter_types! {
 	/// Relay Chain `TransactionByteFee` / 10
-	pub const TransactionByteFee: Balance = 10 * MICROUNIT;
+	pub const TransactionByteFee: Balance = 10 * MICROMQTY;
 }
 
 impl pallet_transaction_payment::Config for Runtime {
