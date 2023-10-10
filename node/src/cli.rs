@@ -1,14 +1,9 @@
-use sc_cli::RunCmd;
 use std::path::PathBuf;
 
 /// Sub-commands supported by the collator.
 #[derive(Debug, clap::Subcommand)]
 #[allow(clippy::large_enum_variant)]
 pub enum Subcommand {
-	/// Key management cli utilities
-	#[command(subcommand)]
-	Key(sc_cli::KeySubcommand),
-
 	/// Build a chain specification.
 	BuildSpec(sc_cli::BuildSpecCmd),
 
@@ -48,9 +43,6 @@ pub enum Subcommand {
 	#[cfg(not(feature = "try-runtime"))]
 	/// Placeholder when binary is not built with `--feature try-runtime`
 	TryRuntime,
-
-	/// Db meta columns information.
-	ChainInfo(sc_cli::ChainInfoCmd),
 }
 
 const AFTER_HELP_EXAMPLE: &str = color_print::cstr!(

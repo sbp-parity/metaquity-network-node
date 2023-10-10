@@ -1,32 +1,24 @@
-use crate::{
-	benchmarking::{inherent_benchmark_data, RemarkBuilder, TransferKeepAliveBuilder},
-	chain_spec,
-	cli::{Cli, RelayChainCli, Subcommand},
-	service,
-	service::{new_partial, DevnetRuntimeExecutor, MainnetRuntimeExecutor},
-};
-use frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE};
-use metaquity_network_runtime::{Block, EXISTENTIAL_DEPOSIT};
-use sc_service::PartialComponents;
-use sp_keyring::Sr25519Keyring;
-
 use std::{net::SocketAddr, path::PathBuf};
 
 use codec::Encode;
 use cumulus_client_cli::generate_genesis_block;
 use cumulus_primitives_core::ParaId;
+use frame_benchmarking_cli::{BenchmarkCmd, SUBSTRATE_REFERENCE_HARDWARE};
 use log::{info, warn};
 use runtime_common::Block;
 use sc_cli::{
 	ChainSpec, CliConfiguration, DefaultConfigurationValues, ImportParams, KeystoreParams,
-	NetworkParams, SharedParams, SubstrateCli,
+	NetworkParams, Result, SharedParams, SubstrateCli,
 };
 use sc_service::config::{BasePath, PrometheusConfig};
 use sp_core::hexdisplay::HexDisplay;
 use sp_runtime::traits::{AccountIdConversion, Block as BlockT};
 
-#[cfg(feature = "try-runtime")]
-use try_runtime_cli::block_building_info::timestamp_with_aura_info;
+use crate::{
+	chain_spec,
+	cli::{Cli, RelayChainCli, Subcommand},
+	service::{new_partial, DevnetRuntimeExecutor, MainnetRuntimeExecutor},
+};
 
 /// Helper enum that is used for better distinction of different parachain/runtime configuration
 /// (it is based/calculated on ChainSpec's 'chain_spec' attribute)
@@ -77,11 +69,8 @@ impl RuntimeResolver for PathBuf {
 	}
 }
 
-// @khssnv: ToDo: refactor
-fn load_spec(id: &str) -> Result<Box<dyn ChainSpec>, String> {
+fn load_spec(id: &str) -> std::result::Result<Box<dyn ChainSpec>, String> {
 	Ok(match id {
-		"dev-old" => Box::new(chain_spec::development_config()?), // @khssnv: ToDo: rename
-		"local-old" => Box::new(chain_spec::local_testnet_config()?), // @khssnv: ToDo: rename
 		"dev" => Box::new(chain_spec::devnet::development_config()),
 		"" | "devnet-local" | "local" => Box::new(chain_spec::devnet::local_testnet_config()),
 		"main" | "mainnet-dev" => Box::new(chain_spec::mainnet::development_config()),
@@ -93,7 +82,6 @@ fn load_spec(id: &str) -> Result<Box<dyn ChainSpec>, String> {
 					Box::new(chain_spec::DevnetChainSpec::from_json_file(path)?)
 				},
 				Runtime::Mainnet => Box::new(chain_spec::MainChainSpec::from_json_file(path)?),
-                _ => Box::new(chain_spec::ChainSpec::from_json_file(std::path::PathBuf::from(path))?),
 			}
 		},
 	})
@@ -112,7 +100,7 @@ impl SubstrateCli for Cli {
 		env!("CARGO_PKG_DESCRIPTION").into()
 	}
 
-    // @khssnv: ToDo: merge this from the `extended-parachain-template` with above
+	// @khssnv: ToDo: merge this from the `extended-parachain-template` with above
 	// fn description() -> String {
 	// 	format!(
 	// 		"Parachain Collator Template\n\nThe command-line arguments provided first will be \
@@ -135,7 +123,7 @@ impl SubstrateCli for Cli {
 		2023
 	}
 
-	fn load_spec(&self, id: &str) -> Result<Box<dyn sc_service::ChainSpec>, String> {
+	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
 		load_spec(id)
 	}
 }
@@ -176,7 +164,6 @@ impl SubstrateCli for RelayChainCli {
 	}
 }
 
-// @khssnv: ToDo: refactor, check "_" case
 macro_rules! construct_async_run {
 	(|$components:ident, $cli:ident, $cmd:ident, $config:ident| $( $code:tt )* ) => {{
 		let runner = $cli.create_runner($cmd)?;
@@ -201,13 +188,6 @@ macro_rules! construct_async_run {
 					{ $( $code )* }.map(|v| (v, task_manager))
 				})
 			}
-            _ => {
-				runner.async_run(|$config| {
-					let $components = service::new_partial(&$config)?;
-					let task_manager = $components.task_manager;
-					{ $( $code )* }.map(|v| (v, task_manager))
-				})
-            }
 		}
 	}}
 }
@@ -234,12 +214,11 @@ macro_rules! construct_benchmark_partials {
 	};
 }
 
-/// Parse and run command line arguments
-pub fn run() -> sc_cli::Result<()> {
+/// Parse command line arguments into service configuration.
+pub fn run() -> Result<()> {
 	let cli = Cli::from_args();
 
 	match &cli.subcommand {
-		Some(Subcommand::Key(cmd)) => cmd.run(&cli),
 		Some(Subcommand::BuildSpec(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
 			runner.sync_run(|config| cmd.run(config.chain_spec, config.network))
@@ -264,6 +243,11 @@ pub fn run() -> sc_cli::Result<()> {
 				Ok(cmd.run(components.client, components.import_queue))
 			})
 		},
+		Some(Subcommand::Revert(cmd)) => {
+			construct_async_run!(|components, cli, cmd, config| {
+				Ok(cmd.run(components.client, components.backend, None))
+			})
+		},
 		Some(Subcommand::PurgeChain(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
 
@@ -283,24 +267,6 @@ pub fn run() -> sc_cli::Result<()> {
 				cmd.run(config, polkadot_config)
 			})
 		},
-		Some(Subcommand::Revert(cmd)) => {
-			construct_async_run!(|components, cli, cmd, config| {
-				Ok(cmd.run(components.client, components.backend, None))
-			})
-		},
-        // @khssnv: ToDo: review if GRANDPA revert required
-		// Some(Subcommand::Revert(cmd)) => {
-		// 	let runner = cli.create_runner(cmd)?;
-		// 	runner.async_run(|config| {
-		// 		let PartialComponents { client, task_manager, backend, .. } =
-		// 			service::new_partial(&config)?;
-		// 		let aux_revert = Box::new(|client, _, blocks| {
-		// 			sc_consensus_grandpa::revert(client, blocks)?;
-		// 			Ok(())
-		// 		});
-		// 		Ok((cmd.run(client, backend, Some(aux_revert)), task_manager))
-		// 	})
-		// },
 		Some(Subcommand::ExportGenesisState(cmd)) => {
 			construct_async_run!(|components, cli, cmd, config| {
 				let spec = cli.load_spec(&cmd.shared_params.chain.clone().unwrap_or_default())?;
@@ -399,10 +365,6 @@ pub fn run() -> sc_cli::Result<()> {
 		Some(Subcommand::TryRuntime) => Err("Try-runtime was not enabled when building the node. \
 			You can enable it with `--features try-runtime`."
 			.into()),
-		Some(Subcommand::ChainInfo(cmd)) => {
-			let runner = cli.create_runner(cmd)?;
-			runner.sync_run(|config| cmd.run::<Block>(&config))
-		},
 		None => {
 			let runner = cli.create_runner(&cli.run.normalize())?;
 			let collator_options = cli.run.collator_options();
