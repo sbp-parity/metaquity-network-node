@@ -2,15 +2,15 @@ name: Build, test and lint
 
 on:
   push:
-    branches:
-      - release-**
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    branches: ["**"]
+
+  workflow_dispatch:
 
 jobs:
   build:
     name: "Build"
     runs-on: ubuntu-latest
+
     steps:
       - name: Free up space on runner
         run: |
@@ -21,12 +21,6 @@ jobs:
 
       - name: Rust Setup
         uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          target: wasm32-unknown-unknown
-          override: true
-          components: rustfmt, clippy
 
       - name: Install protoc
         run: |
@@ -38,16 +32,15 @@ jobs:
       - name: Rustfmt
         uses: actions-rs/cargo@v1
         with:
-          toolchain: stable
           command: fmt
           args: --all --check
-      
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.5.0
         with:
-            cache-on-failure: true
-            cache-all-crates: true
-  
+          cache-on-failure: true
+          cache-all-crates: true
+
       - name: Check Build
         run: |
           cargo check --release
@@ -57,7 +50,7 @@ jobs:
 
       - name: Check try-runtime build
         run: cargo check --release --features=try-runtime
-      
+
       - name: Ensure benchmarking compiles
         run: >
           pushd node &&
