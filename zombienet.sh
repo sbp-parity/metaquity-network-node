@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ZOMBIENET_V=v1.3.55
-POLKADOT_V=v0.9.42
+POLKADOT_V=v1.0.0
 
 case "$(uname -s)" in
     Linux*)     MACHINE=Linux;;
@@ -43,11 +43,11 @@ zombienet_init() {
 
 zombienet_spawn() {
   zombienet_init
-  if [ ! -f target/release/parachain-template-node ]; then
-    echo "building parachain-template-node..."
+  if [ ! -f target/release/metaquity-network ]; then
+    echo "building metaquity-network..."
     cargo build --release
   fi
-  echo "spawning polkadot-local relay chain plus parachain-template-node..."
+  echo "spawning polkadot-local relay chain plus metaquity-network..."
   ./$ZOMBIENET_BIN spawn zombienet-config/rococo-local-config.toml -p native
 }
 
@@ -55,7 +55,7 @@ print_help() {
   echo "This is a shell script to automate the execution of zombienet."
   echo ""
   echo "$ ./zombienet.sh init         # fetches zombienet and polkadot executables"
-  echo "$ ./zombienet.sh spawn        # spawns a rococo-local relay chain plus parachain-template-node"
+  echo "$ ./zombienet.sh spawn        # spawns a rococo-local relay chain plus metaquity-network"
 }
 
 SUBCOMMAND=$1
