@@ -19,15 +19,15 @@ jobs:
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
-      - name: Rust Setup
-        uses: actions-rs/toolchain@v1
-
       - name: Install protoc
         run: |
           sudo apt-get install -y protobuf-compiler
           protoc --version
 
       - uses: actions/checkout@v3
+
+      - name: Rust Setup
+        uses: actions-rs/toolchain@v1
 
       - name: Rustfmt
         uses: actions-rs/cargo@v1
