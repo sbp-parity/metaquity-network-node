@@ -6,7 +6,6 @@ repository = "https://github.com/Metaquity-Network/metaquity-network-node"
 [workspace]
 members = [
     "node",
-    "pallets/*",
     "runtime/mainnet",
     "runtime/devnet",
 ]

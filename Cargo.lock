@@ -2305,7 +2305,6 @@ dependencies = [
  "pallet-collator-selection",
  "pallet-collective",
  "pallet-identity",
- "pallet-motion",
  "pallet-multisig",
  "pallet-nft-fractionalization",
  "pallet-nfts",
@@ -5126,7 +5125,6 @@ dependencies = [
  "pallet-collator-selection",
  "pallet-collective",
  "pallet-identity",
- "pallet-motion",
  "pallet-multisig",
  "pallet-nft-fractionalization",
  "pallet-nfts",
@@ -6386,25 +6384,6 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-mmr-primitives",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "pallet-motion"
-version = "4.0.0-dev"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "pallet-collective",
- "pallet-membership",
- "parity-scale-codec",
- "scale-info",
- "sp-core",
- "sp-io",
  "sp-runtime",
  "sp-std",
 ]
