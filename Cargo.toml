@@ -5,11 +5,7 @@ homepage = "https://metaquity.xyz/"
 repository = "https://github.com/Metaquity-Network/metaquity-network-node"
 
 [workspace]
-members = [
-    "node",
-    "runtime/mainnet",
-    "runtime/devnet",
-]
+members = ["node", "runtime/mainnet", "runtime/devnet"]
 
 resolver = "2"
 
