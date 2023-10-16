@@ -680,6 +680,8 @@ impl pallet_nfts::Config for Runtime {
 	type OffchainSignature = Signature;
 	type OffchainPublic = <Signature as Verify>::Signer;
 	type WeightInfo = ();
+	#[cfg(feature = "runtime-benchmarks")]
+	type Helper = ();
 }
 
 /// A reason for placing a hold on funds.
