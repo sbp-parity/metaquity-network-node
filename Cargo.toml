@@ -1,13 +1,11 @@
 [workspace.package]
 authors = ["Metaquity Network <hello@metaquity.xyz>"]
 edition = "2021"
+homepage = "https://metaquity.xyz/"
 repository = "https://github.com/Metaquity-Network/metaquity-network-node"
 
 [workspace]
-members = [
-    "node",
-    "runtime",
-]
+members = ["node", "runtime/mainnet", "runtime/devnet"]
 
 resolver = "2"
 
