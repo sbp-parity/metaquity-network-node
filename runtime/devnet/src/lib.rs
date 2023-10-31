@@ -10,10 +10,11 @@ mod weights;
 pub mod xcm_config;
 pub use fee::WeightToFee;
 
-use codec::{Decode, Encode, MaxEncodedLen};
 use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
+use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use sp_api::impl_runtime_apis;
-use sp_core::{crypto::KeyTypeId, ConstBool, OpaqueMetadata};
+use sp_core::{ConstBool, OpaqueMetadata};
+use sp_inherents::InherentData;
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, Verify},
@@ -30,7 +31,10 @@ use frame_support::{
 	construct_runtime,
 	dispatch::DispatchClass,
 	parameter_types,
-	traits::{AsEnsureOriginWithArg, ConstU32, ConstU64, ConstU8, EitherOfDiverse, Everything},
+	traits::{
+		fungible::HoldConsideration, AsEnsureOriginWithArg, ConstU32, ConstU64, ConstU8,
+		EitherOfDiverse, Everything, LinearStoragePrice,
+	},
 	weights::{ConstantMultiplier, Weight},
 	BoundedVec, PalletId,
 };
@@ -385,7 +389,7 @@ impl pallet_assets::Config for Runtime {
 	// SBP-M1 review: use separator for consistency - i.e. 1_000
 	type RemoveItemsLimit = ConstU32<1000>;
 	type AssetId = u32;
-	type AssetIdParameter = codec::Compact<u32>;
+	type AssetIdParameter = parity_scale_codec::Compact<u32>;
 	type Currency = Balances;
 	// SBP-M1 review: consider whether anyone should be able to permissionlessly create an asset -
 	// should probably be set to MQTY admin origin only.
@@ -441,6 +445,15 @@ parameter_types! {
 	pub const ReservedDmpWeight: Weight = MAXIMUM_BLOCK_WEIGHT.saturating_div(4);
 }
 
+/// Maximum number of blocks simultaneously accepted by the Runtime, not yet included
+/// into the relay chain.
+const UNINCLUDED_SEGMENT_CAPACITY: u32 = 1;
+/// How many parachain blocks are processed by the relay chain per parent. Limits the
+/// number of blocks authored per slot.
+const BLOCK_PROCESSING_VELOCITY: u32 = 1;
+/// Relay chain slot duration, in milliseconds.
+const RELAY_CHAIN_SLOT_DURATION_MILLIS: u32 = 6000;
+
 impl cumulus_pallet_parachain_system::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type OnSystemEvent = ();
@@ -451,6 +464,12 @@ impl cumulus_pallet_parachain_system::Config for Runtime {
 	type XcmpMessageHandler = XcmpQueue;
 	type ReservedXcmpWeight = ReservedXcmpWeight;
 	type CheckAssociatedRelayNumber = RelayNumberStrictlyIncreases;
+	type ConsensusHook = cumulus_pallet_aura_ext::FixedVelocityConsensusHook<
+		Runtime,
+		RELAY_CHAIN_SLOT_DURATION_MILLIS,
+		BLOCK_PROCESSING_VELOCITY,
+		UNINCLUDED_SEGMENT_CAPACITY,
+	>;
 }
 
 impl parachain_info::Config for Runtime {}
@@ -473,6 +492,25 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type XcmExecutor = XcmExecutor<XcmConfig>;
 	type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
+}
+
+parameter_types! {
+	pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) *
+	RuntimeBlockWeights::get().max_block;
+	pub const NoPreimagePostponement: Option<u32> = Some(10);
+}
+
+impl pallet_scheduler::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type RuntimeOrigin = RuntimeOrigin;
+	type PalletsOrigin = OriginCaller;
+	type RuntimeCall = RuntimeCall;
+	type MaximumWeight = MaximumSchedulerWeight;
+	type ScheduleOrigin = frame_system::EnsureRoot<AccountId>;
+	type OriginPrivilegeCmp = frame_support::traits::EqualPrivilegeOnly;
+	type MaxScheduledPerBlock = ConstU32<512>;
+	type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
+	type Preimages = Preimage;
 }
 
 parameter_types! {
@@ -535,6 +573,25 @@ impl pallet_multisig::Config for Runtime {
 	type DepositFactor = DepositFactor;
 	type MaxSignatories = ConstU32<100>;
 	type WeightInfo = pallet_multisig::weights::SubstrateWeight<Runtime>;
+}
+
+parameter_types! {
+	pub const PreimageBaseDeposit: Balance = deposit(2, 64);
+	pub const PreimageByteDeposit: Balance = deposit(0, 1);
+	pub const PreimageHoldReason: RuntimeHoldReason = RuntimeHoldReason::Preimage(pallet_preimage::HoldReason::Preimage);
+}
+
+impl pallet_preimage::Config for Runtime {
+	type WeightInfo = ();
+	type RuntimeEvent = RuntimeEvent;
+	type Currency = Balances;
+	type ManagerOrigin = EnsureRoot<AccountId>;
+	type Consideration = HoldConsideration<
+		AccountId,
+		Balances,
+		PreimageHoldReason,
+		LinearStoragePrice<PreimageBaseDeposit, PreimageByteDeposit, Balance>,
+	>;
 }
 
 // SBP-M1 review: consider matching member order with that of trait
@@ -752,6 +809,8 @@ construct_runtime!(
 		// Utility
 		Utility: pallet_utility = 4,
 		Multisig: pallet_multisig = 5,
+		Preimage: pallet_preimage = 6,
+		Scheduler: pallet_scheduler = 7,
 
 		// Monetary stuff.
 		Balances: pallet_balances = 10,
@@ -791,9 +850,11 @@ mod benches {
 		[pallet_balances, Balances]
 		[pallet_assets, Assets]
 		[pallet_session, SessionBench::<Runtime>]
+		[pallet_scheduler, Scheduler]
 		[pallet_timestamp, Timestamp]
 		[pallet_collator_selection, CollatorSelection]
 		[pallet_multisig, Multisig]
+		[pallet_preimage, Preimage]
 		[cumulus_pallet_xcmp_queue, XcmpQueue]
 		// SBP-M1 review: add missing pallets: benchmarks should be re-run on reference hardware based on how they are configured/used by your runtime
 	);
@@ -828,7 +889,7 @@ impl_runtime_apis! {
 		fn metadata() -> OpaqueMetadata {
 			OpaqueMetadata::new(Runtime::metadata().into())
 		}
-		fn metadata_at_version(version: u32) -> Option<OpaqueMetadata> {
+		fn metadata_at_version(version: u32) -> Option<sp_core::OpaqueMetadata> {
 			Runtime::metadata_at_version(version)
 		}
 
@@ -846,13 +907,13 @@ impl_runtime_apis! {
 			Executive::finalize_block()
 		}
 
-		fn inherent_extrinsics(data: sp_inherents::InherentData) -> Vec<<Block as BlockT>::Extrinsic> {
+		fn inherent_extrinsics(data: InherentData) -> Vec<<Block as BlockT>::Extrinsic> {
 			data.create_extrinsics()
 		}
 
 		fn check_inherents(
 			block: Block,
-			data: sp_inherents::InherentData,
+			data: InherentData,
 		) -> sp_inherents::CheckInherentsResult {
 			data.check_extrinsics(&block)
 		}
@@ -881,7 +942,7 @@ impl_runtime_apis! {
 
 		fn decode_session_keys(
 			encoded: Vec<u8>,
-		) -> Option<Vec<(Vec<u8>, KeyTypeId)>> {
+		) -> Option<Vec<(Vec<u8>, sp_runtime::KeyTypeId)>> {
 			SessionKeys::decode_into_raw_public_keys(&encoded)
 		}
 	}
@@ -1001,31 +1062,7 @@ impl_runtime_apis! {
 	}
 }
 
-struct CheckInherents;
-
-impl cumulus_pallet_parachain_system::CheckInherents<Block> for CheckInherents {
-	fn check_inherents(
-		block: &Block,
-		relay_state_proof: &cumulus_pallet_parachain_system::RelayChainStateProof,
-	) -> sp_inherents::CheckInherentsResult {
-		let relay_chain_slot = relay_state_proof
-			.read_slot()
-			.expect("Could not read the relay chain slot from the proof");
-
-		let inherent_data =
-			cumulus_primitives_timestamp::InherentDataProvider::from_relay_chain_slot_and_duration(
-				relay_chain_slot,
-				sp_std::time::Duration::from_secs(6),
-			)
-			.create_inherent_data()
-			.expect("Could not create the timestamp inherent data");
-
-		inherent_data.check_extrinsics(block)
-	}
-}
-
 cumulus_pallet_parachain_system::register_validate_block! {
 	Runtime = Runtime,
 	BlockExecutor = cumulus_pallet_aura_ext::BlockExecutor::<Runtime, Executive>,
-	CheckInherents = CheckInherents,
 }
