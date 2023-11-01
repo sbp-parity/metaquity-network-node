@@ -1,10 +1,10 @@
 use std::{net::SocketAddr, path::PathBuf};
 
-use codec::Encode;
 use cumulus_client_cli::generate_genesis_block;
 use cumulus_primitives_core::ParaId;
 use frame_benchmarking_cli::{BenchmarkCmd, SUBSTRATE_REFERENCE_HARDWARE};
-use log::{info, warn};
+use log::info;
+use parity_scale_codec::Encode;
 use runtime_common::Block;
 use sc_cli::{
 	ChainSpec, CliConfiguration, DefaultConfigurationValues, ImportParams, KeystoreParams,
@@ -97,7 +97,13 @@ impl SubstrateCli for Cli {
 	}
 
 	fn description() -> String {
-		env!("CARGO_PKG_DESCRIPTION").into()
+		format!(
+			"Parachain Collator Template\n\nThe command-line arguments provided first will be \
+		passed to the parachain node, while the arguments provided after -- will be passed \
+		to the relay chain node.\n\n\
+		{} <parachain-args> -- <relay-chain-args>",
+			Self::executable_name()
+		)
 	}
 
 	// @khssnv: ToDo: merge this from the `extended-parachain-template` with above
@@ -268,9 +274,13 @@ pub fn run() -> Result<()> {
 			})
 		},
 		Some(Subcommand::ExportGenesisState(cmd)) => {
-			construct_async_run!(|components, cli, cmd, config| {
-				let spec = cli.load_spec(&cmd.shared_params.chain.clone().unwrap_or_default())?;
-				Ok(async move { cmd.run::<Block>(&*spec, &*components.client) })
+			let runner = cli.create_runner(cmd)?;
+			runner.sync_run(|config| {
+				construct_benchmark_partials!(config, |partials| {
+					let spec =
+						cli.load_spec(&cmd.shared_params.chain.clone().unwrap_or_default())?;
+					cmd.run::<Block>(&*spec, &*partials.client)
+				})
 			})
 		},
 		Some(Subcommand::ExportGenesisWasm(cmd)) => {
@@ -370,11 +380,12 @@ pub fn run() -> Result<()> {
 			let collator_options = cli.run.collator_options();
 
 			runner.run_node_until_exit(|config| async move {
-				let hwbench = (!cli.no_hardware_benchmarks).then_some(
-					config.database.path().map(|database_path| {
+				let hwbench = (!cli.no_hardware_benchmarks)
+					.then_some(config.database.path().map(|database_path| {
 						let _ = std::fs::create_dir_all(database_path);
 						sc_sysinfo::gather_hwbench(Some(database_path))
-					})).flatten();
+					}))
+					.flatten();
 
 				let para_id = chain_spec::Extensions::try_get(&*config.chain_spec)
 					.map(|e| e.para_id)
@@ -388,10 +399,13 @@ pub fn run() -> Result<()> {
 				let id = ParaId::from(para_id);
 
 				let parachain_account =
-					AccountIdConversion::<polkadot_primitives::AccountId>::into_account_truncating(&id);
+					AccountIdConversion::<polkadot_primitives::AccountId>::into_account_truncating(
+						&id,
+					);
 
-				let block: Block = generate_genesis_block(&*config.chain_spec, sp_runtime::StateVersion::V1)
-					.map_err(|e| format!("{:?}", e))?;
+				let block: Block =
+					generate_genesis_block(&*config.chain_spec, sp_runtime::StateVersion::V1)
+						.map_err(|e| format!("{:?}", e))?;
 				let genesis_state = format!("0x{:?}", HexDisplay::from(&block.header().encode()));
 
 				let tokio_handle = config.tokio_handle.clone();
@@ -404,31 +418,35 @@ pub fn run() -> Result<()> {
 				info!("Parachain genesis state: {}", genesis_state);
 				info!("Is collating: {}", if config.role.is_authority() { "yes" } else { "no" });
 
-				if !collator_options.relay_chain_rpc_urls.is_empty() && !cli.relay_chain_args.is_empty() {
-					warn!("Detected relay chain node arguments together with --relay-chain-rpc-url. This command starts a minimal Polkadot node that only uses a network-related subset of all relay chain CLI options.");
-				}
 				match config.chain_spec.runtime() {
 					Runtime::Default | Runtime::Devnet => {
 						// If you want to support a custom SS58 prefix (that isn’t yet registered in the ss58-registry),
 						// you are required to call this function with your desired prefix [Ss58AddressFormat::custom].
 						// This will enable the node to decode ss58 addresses with this prefix.
 						// This SS58 version/format is also only used by the node and not by the runtime.
-						sp_core::crypto::set_default_ss58_version(devnet_runtime::SS58Prefix::get().into());
-						crate::service::start_parachain_node::<devnet_runtime::RuntimeApi, DevnetRuntimeExecutor>
-							(config, polkadot_config, collator_options, id, hwbench)
-							.await
-							.map(|r| r.0)
-							.map_err(Into::into)
-
-					}
+						sp_core::crypto::set_default_ss58_version(
+							devnet_runtime::SS58Prefix::get().into(),
+						);
+						crate::service::start_parachain_node::<
+							devnet_runtime::RuntimeApi,
+							DevnetRuntimeExecutor,
+						>(config, polkadot_config, collator_options, id, hwbench)
+						.await
+						.map(|r| r.0)
+						.map_err(Into::into)
+					},
 					Runtime::Mainnet => {
-						sp_core::crypto::set_default_ss58_version(mainnet_runtime::SS58Prefix::get().into());
-						crate::service::start_parachain_node::<mainnet_runtime::RuntimeApi, MainnetRuntimeExecutor>
-							(config, polkadot_config, collator_options, id, hwbench)
-							.await
-							.map(|r| r.0)
-							.map_err(Into::into)
-					}
+						sp_core::crypto::set_default_ss58_version(
+							mainnet_runtime::SS58Prefix::get().into(),
+						);
+						crate::service::start_parachain_node::<
+							mainnet_runtime::RuntimeApi,
+							MainnetRuntimeExecutor,
+						>(config, polkadot_config, collator_options, id, hwbench)
+						.await
+						.map(|r| r.0)
+						.map_err(Into::into)
+					},
 				}
 			})
 		},
