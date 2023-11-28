@@ -221,7 +221,6 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 
 pub const MICROMQTY: Balance = 1_000_000_000_000;
 pub const MILLIMQTY: Balance = 1_000 * MICROMQTY;
-// SBP-M1 review: is 14 decimal places intentional? 18 is specified at https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json#L882. Suggest setting UNITS/DOLLARS/MQTY to 18 decimal value and then divide accordingly for sub-units for clarity. Consider adding additional metadata in the chain_spec.rs as well - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/node/src/chain_spec.rs#L136
 pub const MQTY: Balance = 1_000 * MILLIMQTY;
 
 // SBP-M1 review: very small number for ED, especially for a chain with 18 decimals. Update to some fraction of a UNIT - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/runtime/mainnet/src/lib.rs#L220
