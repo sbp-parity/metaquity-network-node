@@ -19,9 +19,6 @@ pub type Nonce = u32;
 /// up by `pallet_aura` to implement `fn slot_duration()`.
 ///
 /// Change this to adjust the block time.
-// SBP-M1 review: consider effects of block time increasing when migrating from solo chain to parachain (if applicable): https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/runtime/common/src/lib.rs#L22
-// SBP-M1 review: note also that `asynchronous backing` is set to reduce parachain block times to 6
-// seconds once available
 pub const MILLISECS_PER_BLOCK: u64 = 12000;
 
 // NOTE: Currently it is not possible to change the slot duration after the chain has started.
