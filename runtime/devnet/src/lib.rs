@@ -315,7 +315,6 @@ impl frame_system::Config for Runtime {
 	/// The action to take on a Runtime Upgrade
 	type OnSetCode = cumulus_pallet_parachain_system::ParachainSetCode<Self>;
 	/// The maximum number of consumers allowed on a single account.
-	// SBP-M1 review: unnecessary qualification
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
