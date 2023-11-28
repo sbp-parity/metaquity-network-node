@@ -223,8 +223,6 @@ pub const MICROMQTY: Balance = 1_000_000_000_000;
 pub const MILLIMQTY: Balance = 1_000 * MICROMQTY;
 pub const MQTY: Balance = 1_000 * MILLIMQTY;
 
-// SBP-M1 review: very small number for ED, especially for a chain with 18 decimals. Update to some fraction of a UNIT - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/runtime/mainnet/src/lib.rs#L220
-// SBP-M1 review: see https://wiki.polkadot.network/docs/build-protocol-info#existential-deposit for more information
 pub const EXISTENTIAL_DEPOSIT: Balance = MILLIMQTY;
 
 pub const fn deposit(items: u32, bytes: u32) -> Balance {
