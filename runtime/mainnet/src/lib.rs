@@ -268,7 +268,6 @@ parameter_types! {
 
 // Configure FRAME pallets to include in runtime.
 
-// SBP-M1 review: consider matching member order with that of trait
 impl frame_system::Config for Runtime {
 	/// The ubiquitous event type.
 	type RuntimeEvent = RuntimeEvent;
@@ -341,7 +340,6 @@ parameter_types! {
 	pub const ExistentialDeposit: Balance = EXISTENTIAL_DEPOSIT;
 }
 
-// SBP-M1 review: consider matching member order with that of trait
 impl pallet_balances::Config for Runtime {
 	/// The ubiquitous event type.
 	type RuntimeEvent = RuntimeEvent;
@@ -375,7 +373,6 @@ parameter_types! {
 	pub const MetadataDepositPerByte: Balance = deposit(0, 1);
 }
 
-// SBP-M1 review: consider matching member order with that of trait
 impl pallet_assets::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	// SBP-M1 review: reuse Balance type rather than explicit u128?
@@ -588,7 +585,6 @@ impl pallet_preimage::Config for Runtime {
 	>;
 }
 
-// SBP-M1 review: consider matching member order with that of trait
 impl pallet_aura::Config for Runtime {
 	type AuthorityId = AuraId;
 	type MaxAuthorities = ConstU32<100_000>;
@@ -696,7 +692,6 @@ parameter_types! {
 	pub const NftsDepositPerByte: Balance = UniquesDepositPerByte::get();
 }
 
-// SBP-M1 review: consider matching member order with that of trait
 impl pallet_nfts::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type CollectionId = u32;
@@ -762,7 +757,6 @@ parameter_types! {
 	pub NewAssetName: BoundedVec<u8, StringLimit> = (*b"Frac").to_vec().try_into().unwrap();
 }
 
-// SBP-M1 review: consider matching member order with that of trait
 impl pallet_nft_fractionalization::Config for Runtime {
 	// SBP-M1 review: whilst it resolves to the same type, consider using <Self as
 	// pallet_assets::Config>::Balance as it would better align with AssetId and Assets type
