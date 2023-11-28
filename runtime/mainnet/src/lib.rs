@@ -226,9 +226,6 @@ pub const MQTY: Balance = 1_000 * MILLIMQTY;
 pub const EXISTENTIAL_DEPOSIT: Balance = MILLIMQTY;
 
 pub const fn deposit(items: u32, bytes: u32) -> Balance {
-	// SBP-M1 review: implementation may increase likelihood of chain storage bloat by returning a
-	// relatively small value for a deposit, based on the number of decimals currently used on the
-	// chain. SBP-M1 review: typical implementations include an additional multiplier. See deposit function implementations within runtimes at https://github.com/paritytech/polkadot-sdk/tree/master/polkadot/runtime and https://github.com/paritytech/extended-parachain-template/blob/main/runtime/mainnet/src/lib.rs#L223 as examples.
 	(items as Balance * 20 * MQTY + (bytes as Balance) * 100 * MICROMQTY) / 100
 }
 
