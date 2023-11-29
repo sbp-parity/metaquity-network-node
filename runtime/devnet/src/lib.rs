@@ -32,7 +32,7 @@ use frame_support::{
 	dispatch::DispatchClass,
 	parameter_types,
 	traits::{
-		fungible::HoldConsideration, AsEnsureOriginWithArg, ConstU32, ConstU64, ConstU8,
+		fungible::HoldConsideration, AsEnsureOriginWithArg, ConstU128, ConstU32, ConstU64, ConstU8,
 		EitherOfDiverse, Everything, LinearStoragePrice,
 	},
 	weights::{ConstantMultiplier, Weight},
@@ -359,22 +359,13 @@ impl pallet_balances::Config for Runtime {
 
 parameter_types! {
 	pub const AssetDeposit: Balance = 10 * MQTY;
-	pub const AssetAccountDeposit: Balance = deposit(1, 16);
-	// SBP-M1 review: prefer inlining if type only used once - e.g. ConstU128. Also re-consider value after adjusting units mentioned above.
-	pub const ApprovalDeposit: Balance = EXISTENTIAL_DEPOSIT;
 	pub const StringLimit: u32 = 50;
-	// SBP-M1 review: prefer inlining if type only used once - e.g. ConstU128. Also re-consider value after adjusting units mentioned above.
-	pub const MetadataDepositBase: Balance = deposit(1, 68);
-	// SBP-M1 review: prefer inlining if type only used once - e.g. ConstU128. Also re-consider value after adjusting units mentioned above.
-	pub const MetadataDepositPerByte: Balance = deposit(0, 1);
 }
 
 impl pallet_assets::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	// SBP-M1 review: reuse Balance type rather than explicit u128?
 	type Balance = Balance;
-	// SBP-M1 review: use separator for consistency - i.e. 1_000
-	type RemoveItemsLimit = ConstU32<1000>;
+	type RemoveItemsLimit = ConstU32<1_000>;
 	type AssetId = u32;
 	type AssetIdParameter = parity_scale_codec::Compact<u32>;
 	type Currency = Balances;
@@ -385,11 +376,10 @@ impl pallet_assets::Config for Runtime {
 	// fractionalised assets - see EitherOf<L, R>.
 	type ForceOrigin = EnsureRoot<AccountId>;
 	type AssetDeposit = AssetDeposit;
-	// SBP-M1 review: re-consider this after adjusting the units mentioned above
-	type AssetAccountDeposit = AssetAccountDeposit;
-	type MetadataDepositBase = MetadataDepositBase;
-	type MetadataDepositPerByte = MetadataDepositPerByte;
-	type ApprovalDeposit = ApprovalDeposit;
+	type AssetAccountDeposit = ConstU128<{ deposit(1, 16) }>;
+	type MetadataDepositBase = ConstU128<{ deposit(1, 68) }>;
+	type MetadataDepositPerByte = ConstU128<{ deposit(0, 1) }>;
+	type ApprovalDeposit = ConstU128<EXISTENTIAL_DEPOSIT>;
 	type StringLimit = StringLimit;
 	type Freezer = ();
 	type Extra = ();
