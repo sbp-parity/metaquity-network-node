@@ -358,7 +358,6 @@ impl pallet_balances::Config for Runtime {
 }
 
 parameter_types! {
-	// SBP-M1 review: re-consider value after adjusting units mentioned above.
 	pub const AssetDeposit: Balance = 10 * MQTY;
 	pub const AssetAccountDeposit: Balance = deposit(1, 16);
 	// SBP-M1 review: prefer inlining if type only used once - e.g. ConstU128. Also re-consider value after adjusting units mentioned above.
