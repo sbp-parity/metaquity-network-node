@@ -605,37 +605,20 @@ impl pallet_collator_selection::Config for Runtime {
 	type WeightInfo = ();
 }
 
-parameter_types! {
-	// Minimum 100bytes
-	// SBP-M1 review: consider using deposit() function for consistency with other pallets deposits (and as per Polkadot runtime).
-	// @khssnv: ToDo: adjust
-	pub const BasicDeposit: Balance = 10 * MQTY;		//258 bytes on-chain
-	// SBP-M1 review: consider using deposit() function for consistency with other pallets deposits (and as per Polkadot runtime).
-	// @khssnv: ToDo: adjust
-	pub const FieldDeposit: Balance = 2 * MQTY;			//66 bytes on-chain
-	// SBP-M1 review: consider using deposit() function for consistency with other pallets deposits (and as per Polkadot runtime).
-	// @khssnv: ToDo: adjust
-	pub const SubAccountDeposit: Balance = 2 * MQTY;	// 53 bytes on-chain
-	pub const MaxAdditionalFields: u32 = 100;
-	pub const MaxSubAccounts: u32 = 100;
-	pub const MaxRegistrars: u32= 20;
-}
-
 impl pallet_identity::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
-	type BasicDeposit = BasicDeposit;
-	type FieldDeposit = FieldDeposit;
-	type SubAccountDeposit = SubAccountDeposit;
-	type MaxSubAccounts = MaxSubAccounts;
-	type MaxAdditionalFields = MaxAdditionalFields;
-	type MaxRegistrars = MaxRegistrars;
+	type BasicDeposit = ConstU128<{ deposit(1, 258) }>;
+	type FieldDeposit = ConstU128<{ deposit(0, 66) }>;
+	type SubAccountDeposit = ConstU128<{ deposit(1, 53) }>;
+	type MaxSubAccounts = ConstU32<100>;
+	type MaxAdditionalFields = ConstU32<100>;
+	type MaxRegistrars = ConstU32<20>;
 	// SBP-M1 review: consider what happens with slashed funds - e.g. treasury
 	type Slashed = ();
-	// SBP-M1 review: should be EnsureRoot
-	type ForceOrigin = EnsureSigned<Self::AccountId>;
+	type ForceOrigin = EnsureRoot<AccountId>;
 	// SBP-M1 review: should be EnsureRoot or MQTY admin origin to maintain registrar integrity
-	type RegistrarOrigin = EnsureSigned<Self::AccountId>;
+	type RegistrarOrigin = EnsureRoot<AccountId>;
 	type WeightInfo = ();
 }
 
