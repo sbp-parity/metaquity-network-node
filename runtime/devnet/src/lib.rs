@@ -353,9 +353,7 @@ impl pallet_balances::Config for Runtime {
 	type FreezeIdentifier = ();
 	type MaxLocks = ConstU32<50>;
 	type MaxReserves = ConstU32<50>;
-	// SBP-M1 review: add comment noting why this is set to one - i.e.
-	// HoldReason::NftFractionalization
-	type MaxHolds = ConstU32<1>;
+	type MaxHolds = ConstU32<1>; // HoldReason::NftFractionalization
 	type MaxFreezes = ConstU32<0>;
 }
 
