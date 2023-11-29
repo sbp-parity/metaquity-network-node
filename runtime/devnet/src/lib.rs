@@ -396,16 +396,11 @@ parameter_types! {
 
 impl pallet_transaction_payment::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	// SBP-M1 review: consider a mechanism for dealing with transaction fees - e.g. DealWithFees
 	type OnChargeTransaction =
 		pallet_transaction_payment::CurrencyAdapter<Balances, DealWithFees<Runtime>>;
 	type OperationalFeeMultiplier = ConstU8<5>;
-	// SBP-M1 review: consider non-default weight to fee mechanisms - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/runtime/mainnet/src/lib.rs#L126
 	type WeightToFee = WeightToFee;
-	// SBP-M1 review: consider non-default length to fee mechanisms
 	type LengthToFee = ConstantMultiplier<Balance, TransactionByteFee>;
-	// SBP-M1 review: consider non-default fee multiplier update mechanisms - e.g.
-	// SlowAdjustingFeeUpdate
 	type FeeMultiplierUpdate = SlowAdjustingFeeUpdate<Self>;
 }
 
