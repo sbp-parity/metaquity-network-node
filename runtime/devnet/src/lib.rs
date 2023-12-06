@@ -622,38 +622,8 @@ impl pallet_identity::Config for Runtime {
 	type WeightInfo = ();
 }
 
-// SBP-M1 review: pallet_uniques is not used, so these parameters can be removed, with values moved
-// to Nfts* parameter types
 parameter_types! {
-	// SBP-M1 review: UNITS is 1, resulting in deposit of zero. This needs to be fixed.
-	// SBP-M1 review: only used once, move implementation to usage to remove this parameter
-	pub const UniquesCollectionDeposit: Balance = MQTY / 10;
-	// SBP-M1 review: UNITS is 1, resulting in deposit of zero. This needs to be fixed.
-	// SBP-M1 review: only used once, move implementation to usage to remove this parameter
-	pub const UniquesItemDeposit: Balance = MQTY / 1_000;
-	// SBP-M1 review: only used once, move implementation to usage to remove this parameter
-	// SBP-M1 review: provide justification as to how 129 is determined. I do see that it is configured this way on Asset Hub on Polkadot/Kusama though.
-	pub const UniquesMetadataDepositsBase: Balance = deposit(1, 129);
-	// SBP-M1 review: only used once, move implementation to usage to remove this parameter
-	// SBP-M1 review: provide justification as to how 129 is determined. Asset Hub on Polkadot/Kusama has this configured as deposit(1, 0).
-	pub const UniquesAttributeDepositsBase: Balance = deposit(1, 129);
-	// SBP-M1 review: only used once, move implementation to usage to remove this parameter
-	pub const UniquesDepositPerByte: Balance = deposit(0, 1);
-}
-
-parameter_types! {
-	pub NftsPalletFeatures: PalletFeatures = PalletFeatures::all_enabled();
-	// SBP-M1 review: only used once, inline value via ConstU32 to remove this parameter
-	pub const NftsMaxDeadlineDuration: BlockNumber = 12 * 30 * DAYS;
-
-	// SBP-M1 review: typo
-	// reuse the unique deopsits
-	// SBP-M1 review: move impls from above for each of the following to eliminate Uniques* parameter types above
-	pub const NftsCollectionDeposit: Balance = UniquesCollectionDeposit::get();
-	pub const NftsItemDeposit: Balance = UniquesItemDeposit::get();
-	pub const NftsMetadataDepositsBase: Balance = UniquesMetadataDepositsBase::get();
-	pub const NftsAttributeDepositsBase: Balance = UniquesAttributeDepositsBase::get();
-	pub const NftsDepositPerByte: Balance = UniquesDepositPerByte::get();
+	pub Features: PalletFeatures = PalletFeatures::all_enabled();
 }
 
 impl pallet_nfts::Config for Runtime {
@@ -661,37 +631,35 @@ impl pallet_nfts::Config for Runtime {
 	type CollectionId = u32;
 	type ItemId = u32;
 	type Currency = Balances;
-	// SBP-M1 review: consider whether any user with access to public chain should be able to
-	// permissionlessly create collections, which is currently the case here. The use-case/UI
-	// screenshots imply that asset verification is required, so assume the onchain creation of
-	// collections should only be carried out by MQTY admin (e.g. configure CreateOrigin as MQTY
-	// admin) and then assets (NFTs) minted by the collection admin once verified. SBP-M1 review:
-	// unnecessary qualification (frame_system::)
-	type CreateOrigin = AsEnsureOriginWithArg<frame_system::EnsureSigned<Self::AccountId>>;
-	// SBP-M1 review: unnecessary qualification (frame_system::)
-	type ForceOrigin = frame_system::EnsureRoot<Self::AccountId>;
-	type Locker = ();
-	type CollectionDeposit = NftsCollectionDeposit;
-	type ItemDeposit = NftsItemDeposit;
-	type MetadataDepositBase = NftsMetadataDepositsBase;
-	type AttributeDepositBase = NftsAttributeDepositsBase;
-	type DepositPerByte = NftsDepositPerByte;
-	type StringLimit = ConstU32<50>;
-	type KeyLimit = ConstU32<50>;
-	type ValueLimit = ConstU32<50>;
-	type ApprovalsLimit = ConstU32<10>;
-	type ItemAttributesApprovalsLimit = ConstU32<2>;
+	type ForceOrigin = EnsureRoot<AccountId>;
+	type CollectionDeposit = ConstU128<{ 100 * MQTY }>;
+	type ItemDeposit = ConstU128<{ 1 * MQTY }>;
+	// SBP-M1 review: provide justification as to how 10 is determined.
+	type MetadataDepositBase = ConstU128<{ 10 * MQTY }>;
+	// SBP-M1 review: provide justification as to how 10 is determined.
+	type AttributeDepositBase = ConstU128<{ 10 * MQTY }>;
+	type DepositPerByte = ConstU128<{ deposit(0, 1) }>;
+	type StringLimit = ConstU32<256>;
+	type KeyLimit = ConstU32<64>;
+	type ValueLimit = ConstU32<256>;
+	type ApprovalsLimit = ConstU32<20>;
+	type ItemAttributesApprovalsLimit = ConstU32<20>;
 	type MaxTips = ConstU32<10>;
-	type MaxDeadlineDuration = NftsMaxDeadlineDuration;
-	type MaxAttributesPerCall = ConstU32<2>;
-	type Features = NftsPalletFeatures;
-	/// Off-chain = signature On-chain - therefore no conversion needed.
-	/// It needs to be From<MultiSignature> for benchmarking.
+	type MaxDeadlineDuration = ConstU32<{ 12 * 30 * DAYS }>;
+	type MaxAttributesPerCall = ConstU32<10>;
+	type Features = Features;
 	type OffchainSignature = Signature;
 	type OffchainPublic = <Signature as Verify>::Signer;
 	type WeightInfo = ();
 	#[cfg(feature = "runtime-benchmarks")]
 	type Helper = ();
+	// SBP-M1 review: consider whether any user with access to public chain should be able to
+	// permissionlessly create collections, which is currently the case here. The use-case/UI
+	// screenshots imply that asset verification is required, so assume the onchain creation of
+	// collections should only be carried out by MQTY admin (e.g. configure CreateOrigin as MQTY
+	// admin) and then assets (NFTs) minted by the collection admin once verified.
+	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
+	type Locker = ();
 }
 
 /// A reason for placing a hold on funds.
