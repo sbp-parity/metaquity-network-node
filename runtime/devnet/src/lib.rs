@@ -696,7 +696,6 @@ impl pallet_nft_fractionalization::Config for Runtime {
 construct_runtime!(
 	pub struct Runtime {
 		// System support stuff.
-		// SBP-M1 review: explicit pallet indices preferred - e.g. https://github.com/paritytech/extended-parachain-template/blob/3bec37d7844880d13e0a1f3253d1402500f83789/runtime/mainnet/src/lib.rs#L564
 		System: frame_system = 0,
 		ParachainSystem: cumulus_pallet_parachain_system = 1,
 		Timestamp: pallet_timestamp = 2,
