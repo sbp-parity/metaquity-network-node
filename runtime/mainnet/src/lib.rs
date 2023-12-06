@@ -11,7 +11,6 @@ pub mod xcm_config;
 pub use fee::WeightToFee;
 
 use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
-use parity_scale_codec::{Decode, Encode, MaxEncodedLen};
 use sp_api::impl_runtime_apis;
 use sp_core::{ConstBool, OpaqueMetadata};
 use sp_inherents::InherentData;
@@ -662,58 +661,35 @@ impl pallet_nfts::Config for Runtime {
 	type Locker = ();
 }
 
-/// A reason for placing a hold on funds.
-#[derive(
-	Copy,
-	Clone,
-	Eq,
-	PartialEq,
-	Ord,
-	PartialOrd,
-	Encode,
-	Decode,
-	MaxEncodedLen,
-	Debug,
-	scale_info::TypeInfo,
-)]
-pub enum HoldReason {
-	/// Used by the NFT Fractionalization Pallet.
-	NftFractionalization,
-}
-
 parameter_types! {
 	pub const NftFractionalizationPalletId: PalletId = PalletId(*b"fraction");
-	// SBP-M1 review: consider BoundedVec::unchecked_from() or use .expect("reason") rather than .unwrap(). I see the Asset Hub on Kusama is configured this way though.
-	pub NewAssetSymbol: BoundedVec<u8, StringLimit> = (*b"FRAC").to_vec().try_into().unwrap();
+	pub FractionalizedAssetSymbol: BoundedVec<u8, StringLimit> = (*b"FRAC").to_vec().try_into().expect("bad nft-fractionalization asset symbol");
 	// SBP-M1 review: consider something more informative like 'Fractionalized Asset'. May not matter though, as it will probably require an assets::force_set_metadata to customise the fractionalized asset metadata after the NFT has been fractionalized.
-	pub NewAssetName: BoundedVec<u8, StringLimit> = (*b"Frac").to_vec().try_into().unwrap();
+	pub FractionalizedAssetName: BoundedVec<u8, StringLimit> = (*b"Frac").to_vec().try_into().expect("bad nft-fractionalization asset name");
 }
 
 impl pallet_nft_fractionalization::Config for Runtime {
-	// SBP-M1 review: whilst it resolves to the same type, consider using <Self as
-	// pallet_assets::Config>::Balance as it would better align with AssetId and Assets type
-	// definitions below. I see the Asset Hub on Kusama is configured this way though.
-	type AssetBalance = <Self as pallet_balances::Config>::Balance;
-	type AssetId = <Self as pallet_assets::Config>::AssetId;
-	type Assets = Assets;
+	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
+	type RuntimeHoldReason = RuntimeHoldReason;
 	// SBP-M1 review: uses AssetDeposit rather than NftsCollectionDeposit and cannot determine
 	// whether this is intentional. I see the Asset Hub on Kusama is configured this way though.
 	// Suggest adding NftFractionalizationDeposit alias to AssetDeposit or NftsCollectionDeposit
 	// with a comment as to why it is being used in your runtime for clarity.
 	type Deposit = AssetDeposit;
-	type NewAssetName = NewAssetName;
-	type NewAssetSymbol = NewAssetSymbol;
 	type NftCollectionId = <Self as pallet_nfts::Config>::CollectionId;
 	type NftId = <Self as pallet_nfts::Config>::ItemId;
+	type AssetBalance = <Self as pallet_assets::Config>::Balance;
+	type AssetId = <Self as pallet_assets::Config>::AssetId;
+	type Assets = Assets;
 	type Nfts = Nfts;
 	type PalletId = NftFractionalizationPalletId;
-	type RuntimeEvent = RuntimeEvent;
-	type RuntimeHoldReason = RuntimeHoldReason;
+	type NewAssetSymbol = FractionalizedAssetSymbol;
+	type NewAssetName = FractionalizedAssetName;
 	type StringLimit = StringLimit;
-	type WeightInfo = pallet_nft_fractionalization::weights::SubstrateWeight<Runtime>;
 	#[cfg(feature = "runtime-benchmarks")]
 	type BenchmarkHelper = ();
+	type WeightInfo = pallet_nft_fractionalization::weights::SubstrateWeight<Runtime>;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
