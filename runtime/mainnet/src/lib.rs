@@ -370,9 +370,11 @@ impl pallet_assets::Config for Runtime {
 	type Currency = Balances;
 	// SBP-M1 review: consider whether anyone should be able to permissionlessly create an asset -
 	// should probably be set to MQTY admin origin only.
+	// TODO (@khssnv): consider Asset originator or Verifier origin only
 	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
 	// SBP-M1 review: may need to be root or MQTY admin origin to allow force_set_metadata for
 	// fractionalised assets - see EitherOf<L, R>.
+	// TODO (@khssnv): consider Verifier origin
 	type ForceOrigin = EnsureRoot<AccountId>;
 	type AssetDeposit = AssetDeposit;
 	type AssetAccountDeposit = ConstU128<{ deposit(1, 16) }>;
@@ -614,9 +616,11 @@ impl pallet_identity::Config for Runtime {
 	type MaxAdditionalFields = ConstU32<100>;
 	type MaxRegistrars = ConstU32<20>;
 	// SBP-M1 review: consider what happens with slashed funds - e.g. treasury
+	// TODO (@khssnv)
 	type Slashed = ();
 	type ForceOrigin = EnsureRoot<AccountId>;
 	// SBP-M1 review: should be EnsureRoot or MQTY admin origin to maintain registrar integrity
+	// TODO (@khssnv): consider Verifier origin
 	type RegistrarOrigin = EnsureRoot<AccountId>;
 	type WeightInfo = ();
 }
@@ -634,8 +638,10 @@ impl pallet_nfts::Config for Runtime {
 	type CollectionDeposit = ConstU128<{ 100 * MQTY }>;
 	type ItemDeposit = ConstU128<{ 1 * MQTY }>;
 	// SBP-M1 review: provide justification as to how 10 is determined.
+	// TODO (@khssnv): reconsider
 	type MetadataDepositBase = ConstU128<{ 10 * MQTY }>;
 	// SBP-M1 review: provide justification as to how 10 is determined.
+	// TODO (@khssnv): reconsider
 	type AttributeDepositBase = ConstU128<{ 10 * MQTY }>;
 	type DepositPerByte = ConstU128<{ deposit(0, 1) }>;
 	type StringLimit = ConstU32<256>;
@@ -657,6 +663,7 @@ impl pallet_nfts::Config for Runtime {
 	// screenshots imply that asset verification is required, so assume the onchain creation of
 	// collections should only be carried out by MQTY admin (e.g. configure CreateOrigin as MQTY
 	// admin) and then assets (NFTs) minted by the collection admin once verified.
+	// TODO (@khssnv): consider Asset originator or Verifier origin only
 	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
 	type Locker = ();
 }
@@ -665,6 +672,7 @@ parameter_types! {
 	pub const NftFractionalizationPalletId: PalletId = PalletId(*b"fraction");
 	pub FractionalizedAssetSymbol: BoundedVec<u8, StringLimit> = (*b"FRAC").to_vec().try_into().expect("bad nft-fractionalization asset symbol");
 	// SBP-M1 review: consider something more informative like 'Fractionalized Asset'. May not matter though, as it will probably require an assets::force_set_metadata to customise the fractionalized asset metadata after the NFT has been fractionalized.
+	// TODO (@khssnv)
 	pub FractionalizedAssetName: BoundedVec<u8, StringLimit> = (*b"Frac").to_vec().try_into().expect("bad nft-fractionalization asset name");
 }
 
@@ -676,6 +684,7 @@ impl pallet_nft_fractionalization::Config for Runtime {
 	// whether this is intentional. I see the Asset Hub on Kusama is configured this way though.
 	// Suggest adding NftFractionalizationDeposit alias to AssetDeposit or NftsCollectionDeposit
 	// with a comment as to why it is being used in your runtime for clarity.
+	// TODO (@khssnv): reconsider
 	type Deposit = AssetDeposit;
 	type NftCollectionId = <Self as pallet_nfts::Config>::CollectionId;
 	type NftId = <Self as pallet_nfts::Config>::ItemId;
@@ -755,6 +764,7 @@ mod benches {
 		[pallet_nft_fractionalization, NftFractionalization]
 		[cumulus_pallet_xcmp_queue, XcmpQueue]
 		// SBP-M1 review: add missing pallets: benchmarks should be re-run on reference hardware based on how they are configured/used by your runtime
+		// TODO (@khssnv): consider reference hardware and re-run benchmarks
 	);
 }
 
