@@ -1,7 +1,7 @@
 //! Service and ServiceFactory implementation. Specialized wrapper over substrate service.
 
 use futures::FutureExt;
-use metaquity_network_runtime::{self, opaque::Block, RuntimeApi};
+use metaquity_runtime::{self, opaque::Block, RuntimeApi};
 use sc_client_api::{Backend, BlockBackend};
 use sc_consensus_aura::{ImportQueueParams, SlotProportion, StartAuraParams};
 use sc_consensus_grandpa::SharedVoterState;
@@ -24,11 +24,11 @@ impl sc_executor::NativeExecutionDispatch for ExecutorDispatch {
 	type ExtendHostFunctions = ();
 
 	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		metaquity_network_runtime::api::dispatch(method, data)
+		metaquity_runtime::api::dispatch(method, data)
 	}
 
 	fn native_version() -> sc_executor::NativeVersion {
-		metaquity_network_runtime::native_version()
+		metaquity_runtime::native_version()
 	}
 }
 
@@ -72,7 +72,6 @@ pub fn new_partial(
 		.transpose()?;
 
 	let executor = sc_service::new_native_or_wasm_executor(config);
-
 	let (client, backend, keystore_container, task_manager) =
 		sc_service::new_full_parts::<Block, RuntimeApi, _>(
 			config,

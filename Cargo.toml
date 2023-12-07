@@ -1,21 +1,13 @@
-[workspace.package]
-authors = ["Metaquity Network <hello@metaquity.xyz>"]
-edition = "2021"
-repository = "https://github.com/Metaquity-Network/metaquity-network-node"
-
-[workspace]
-members = [
-    "node",
-    "runtime",
-]
-
-resolver = "2"
-
 [profile.release]
 panic = "unwind"
 
-# SBP-M1 review: as noted, the template used for this project is based on the `substrate-node-template` which is for building a solo chain rather than a parachain.
-# SBP-M1 review: Cumulus (https://github.com/paritytech/polkadot-sdk/tree/master/cumulus) is the parachain SDK which should be used instead to build a parachain, with a starter template available at https://github.com/substrate-developer-hub/substrate-parachain-template
-# SBP-M1 review: finally, the Extended Parachain Template (https://github.com/paritytech/extended-parachain-template) builds on the above and is recommended for a new parachain project.
+[workspace]
+members = ["node", "runtime"]
+resolver = "2"
 
-# SBP-M1 review: add integration tests to ensure runtime functionality works as expected. Suggested tools include zombienet, parachains-integration-tests, chopsticks as applicable.
+[workspace.package]
+authors = ["Metaquity Limited <hello@metaquity.xyz>"]
+edition = "2021"
+homepage = "https://metaquity.xyz/"
+license = "Unlicense"
+repository = "https://github.com/Metaquity-Network/metaquity-network-node"

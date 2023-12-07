@@ -1,4 +1,4 @@
-use metaquity_network_runtime::{
+use metaquity_runtime::{
 	AccountId, AuraConfig, BalancesConfig, GrandpaConfig, RuntimeGenesisConfig, Signature,
 	SudoConfig, SystemConfig, WASM_BINARY,
 };
@@ -154,6 +154,6 @@ fn testnet_genesis(
 			key: Some(root_key),
 		},
 		transaction_payment: Default::default(),
-		assets: Default::default(),
+		vesting: Default::default(),
 	}
 }

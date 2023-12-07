@@ -1,16 +1,12 @@
 FROM phusion/baseimage:jammy-1.0.1
 
 # metadata
-ARG VCS_REF
 ARG BUILD_DATE
 
 LABEL xyz.metaquity.image.authors="hello@metaquity.xyz" \
 	xyz.metaquity.image.vendor="Metaquity Limited" \
-	xyz.metaquity.image.title="Metaquity-Network/metaquity-network-node" \
-	xyz.metaquity.image.source="https://github.com/Metaquity-Network/metaquity-network-node/blob/${VCS_REF}/Dockerfile" \
-	xyz.metaquity.image.revision="${VCS_REF}" \
-	xyz.metaquity.image.created="${BUILD_DATE}" \
-	xyz.metaquity.image.documentation="https://github.com/Metaquity-Network/metaquity-network-node"
+	xyz.metaquity.image.title="Metaquity-Network/metaquity" \
+	xyz.metaquity.image.created="${BUILD_DATE}"
 
 # show backtraces
 ENV RUST_BACKTRACE 1
@@ -31,11 +27,11 @@ RUN apt-get update && \
 USER metaquity
 
 # copy the compiled binary to the container
-COPY --chown=metaquity:metaquity --chmod=774 metaquity-network /usr/bin/metaquity-network
+COPY --chown=metaquity:metaquity --chmod=774 metaquity /usr/bin/metaquity
 
 # check if executable works in this container
-RUN /usr/bin/metaquity-network --version
+RUN /usr/bin/metaquity --version
 
 EXPOSE 9930 9333 9944 30333 30334
 
-CMD ["/usr/bin/metaquity-network"]
+CMD ["/usr/bin/metaquity"]
