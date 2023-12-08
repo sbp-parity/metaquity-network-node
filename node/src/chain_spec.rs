@@ -264,6 +264,7 @@ pub mod devnet {
 				..Default::default()
 			},
 			transaction_payment: Default::default(),
+			treasury: Default::default(),
 		}
 	}
 }
@@ -461,6 +462,7 @@ pub mod mainnet {
 				..Default::default()
 			},
 			transaction_payment: Default::default(),
+			treasury: Default::default(),
 		}
 	}
 }
