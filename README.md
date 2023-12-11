@@ -1,74 +1,72 @@
-# Metaquity Node
-
-### Build
-
-Use the following command to build the node without launching it:
-
-```sh
-cargo build --release
-```
-
-### Embedded Docs
-
-After you build the project, you can use the following command to explore its parameters and subcommands:
-
-```sh
-./target/release/node-template -h
-```
-
-You can generate and view the [Rust Docs](https://doc.rust-lang.org/cargo/commands/cargo-doc.html) for this template with this command:
-
-```sh
-cargo +nightly doc --open
-```
-
-### Single-Node Development Chain
-
-The following command starts a single-node development chain that doesn't persist state:
-
-```sh
-./target/release/node-template --dev
-```
-
-To purge the development chain's state, run the following command:
-
-```sh
-./target/release/node-template purge-chain --dev
-```
-
-To start the development chain with detailed logging, run the following command:
-
-```sh
-RUST_BACKTRACE=1 ./target/release/node-template -ldebug --dev
-```
-
-Development chains:
-
-- Maintain state in a `tmp` folder while the node is running.
-- Use the **Alice** and **Bob** accounts as default validator authorities.
-- Use the **Alice** account as the default `sudo` account.
-- Are preconfigured with a genesis state (`/node/src/chain_spec.rs`) that includes several prefunded development accounts.
-
-
-To persist chain state between runs, specify a base path by running a command similar to the following:
-
-```sh
-// Create a folder to use as the db base path
-$ mkdir my-chain-state
-
-// Use of that folder to store the chain state
-$ ./target/release/node-template --dev --base-path ./my-chain-state/
-
-// Check the folder structure created inside the base path after running the chain
-$ ls ./my-chain-state
-chains
-$ ls ./my-chain-state/chains/
-dev
-$ ls ./my-chain-state/chains/dev
-db keystore network
-```
-
-### Connect with Polkadot-JS Apps Front-End
-
-Similar to other substrate-based nodes, after you start the node locally, you can interact with it using the hosted version of the [Polkadot/Substrate Portal](https://polkadot.js.org/apps/#/explorer?rpc=ws://localhost:9944) front-end by connecting to the local node endpoint.
-
+# Metaquity Network
+​
+The World's First Permissioned Blockchain Network and DeFi Protocol for Real World Assets (RWA) focusing on solar assets.
+​
+## Building
+​
+1. Clone the repository
+​
+    ```console
+    git clone https://github.com/Metaquity-Network/metaquity-network-node && cd metaquity-network-node
+    ```
+​
+1. Setup Rust if you don't have it yet
+​
+    ```console
+    sh scripts/init.sh
+    ```
+​
+1. Build the node binary
+​
+    ```console
+    cargo build --release
+    ```
+​
+1. Build a Docker image
+​
+    ```console
+    cp target/release/
+    docker build -t metaquity-network .
+    ```
+​
+## Launch a collator node
+​
+1. Export the Docker image from the build environment
+​
+    ```console
+    docker image save metaquity-network:latest -o metaquity-network.img
+    ```
+​
+1. Copy the image to the server
+​
+    ```console
+    scp metaquity-network.img $REMOTE_USER@$REMOTE_SERVER:~
+    ```
+​
+1. Login to the server and load the image from the build environment
+​
+    ```console
+    ssh $REMOTE_USER@$REMOTE_SERVER
+    docker image load -i metaquity-network.img
+    ```
+​
+1. Launch the collator node in container
+​
+    ```console
+    docker run -d \
+        --name metaquity-network-collator \
+        --restart unless-stopped \
+        --network host \
+        -v metaquity-rococo-testnet-collator-data:/data \
+        metaquity-network:latest \
+        metaquity-network \
+        --collator \
+        --base-path /data \
+        --port 50333 \
+        --rpc-port 8855 \
+        --bootnodes /dns/3.aws.metaquity.xyz/tcp/50333/p2p/12D3KooWAXpHoi3P7B1aEmdoVYMunctQUtWJwfpbNRbpLwREQQM2 \
+        -- \
+        --chain rococo \
+        --port 50343 \
+        --rpc-port 9988
+    ```

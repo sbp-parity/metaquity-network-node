@@ -1,0 +1,10 @@
+.git
+**/target/
+**/*.txt
+**/*.md
+/docker/
+Dockerfile
+!/target/release/polkadot-collator
+
+# dotfiles in the repo root
+/.*
