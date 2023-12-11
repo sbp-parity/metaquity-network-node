@@ -52,6 +52,7 @@ pallet-sudo = { workspace = true, default-features = false }
 pallet-timestamp = { workspace = true, default-features = false }
 pallet-transaction-payment = { workspace = true, default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { workspace = true, default-features = false }
+pallet-treasury = { workspace = true, default-features = false }
 pallet-utility = { workspace = true, default-features = false }
 sp-api = { workspace = true, default-features = false }
 sp-block-builder = { workspace = true, default-features = false }
@@ -116,12 +117,14 @@ std = [
 	"pallet-multisig/std",
 	"pallet-nft-fractionalization/std",
 	"pallet-nfts/std",
+	"pallet-preimage/std",
 	"pallet-scheduler/std",
 	"pallet-session/std",
 	"pallet-sudo/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
 	"pallet-transaction-payment/std",
+	"pallet-treasury/std",
 	"pallet-utility/std",
 	"pallet-xcm/std",
 	"parachain-info/std",
@@ -166,6 +169,7 @@ runtime-benchmarks = [
 	"pallet-preimage/runtime-benchmarks",
 	"pallet-scheduler/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
+	"pallet-treasury/runtime-benchmarks",
 	"pallet-utility/runtime-benchmarks",
 	"pallet-xcm/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
@@ -197,6 +201,7 @@ try-runtime = [
 	"pallet-sudo/try-runtime",
 	"pallet-timestamp/try-runtime",
 	"pallet-transaction-payment/try-runtime",
+	"pallet-treasury/try-runtime",
 	"pallet-utility/try-runtime",
 	"pallet-xcm/try-runtime",
 	"parachain-info/try-runtime",
