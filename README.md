@@ -10,18 +10,22 @@ The World's First Permissioned Blockchain Network and DeFi Protocol for Real Wor
     git clone https://github.com/Metaquity-Network/metaquity-network-node && cd metaquity-network-node
     ```
 ​
+
 2. Setup Rust if you don't have it yet
 ​
     ```console
     sh scripts/init.sh
     ```
+    
 ​
+
 3. Build the node binary
 ​
     ```console
     cargo build --release
     ```
 ​
+
 4. Build a Docker image
 ​
     ```console
@@ -37,12 +41,14 @@ The World's First Permissioned Blockchain Network and DeFi Protocol for Real Wor
     docker image save metaquity-network:latest -o metaquity-network.img
     ```
 ​
+
 2. Copy the image to the server
 ​
     ```console
     scp metaquity-network.img $REMOTE_USER@$REMOTE_SERVER:~
     ```
 ​
+
 3. Login to the server and load the image from the build environment
 ​
     ```console
@@ -50,6 +56,7 @@ The World's First Permissioned Blockchain Network and DeFi Protocol for Real Wor
     docker image load -i metaquity-network.img
     ```
 ​
+
 4. Launch the collator node in container
 ​
     ```console
