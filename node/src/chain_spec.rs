@@ -311,6 +311,7 @@ pub mod mainnet {
 						get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 					],
+					// SBP-M2 review: consider using multisig for default mainnet config https://github.com/paritytech/extended-parachain-template/blob/2ef1fa882c5e1387ba581836c4899fc75080ef19/node/src/chain_spec.rs#L342
 					Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
 					PARA_ID.into(),
 				)
@@ -367,6 +368,7 @@ pub mod mainnet {
 						get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
 						get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 					],
+					// SBP-M2 review: consider using multisig for default mainnet config https://github.com/paritytech/extended-parachain-template/blob/2ef1fa882c5e1387ba581836c4899fc75080ef19/node/src/chain_spec.rs#L408
 					Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
 					PARA_ID.into(),
 				)
@@ -407,6 +409,7 @@ pub mod mainnet {
 				..Default::default()
 			},
 			balances: mainnet_runtime::BalancesConfig {
+				// SBP-M1 review: ensure root_key funded
 				balances: endowed_accounts.iter().cloned().map(|k| (k, 1 << 60)).collect(),
 			},
 			// Configure two assets ALT1 & ALT2 with two owners, alice and bob respectively

@@ -66,6 +66,7 @@ use runtime_common::Nonce;
 use xcm::latest::prelude::BodyId;
 use xcm_executor::XcmExecutor;
 
+// SBP-M2 review: move type aliases to runtime/common to standardise across devnet/mainnet
 /// The address format for describing accounts.
 pub type Address = MultiAddress<AccountId, ()>;
 
@@ -109,6 +110,7 @@ pub type Executive = frame_executive::Executive<
 	AllPalletsWithSystem,
 >;
 
+// SBP-M2 review: duplicate module implementations, move to runtime/common to standardise across devnet/mainnet
 pub mod fee {
 	use super::{Balance, ExtrinsicBaseWeight, MILLIMQTY};
 	use frame_support::weights::{
@@ -218,12 +220,14 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	state_version: 1,
 };
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 pub const MICROMQTY: Balance = 1_000_000_000_000;
 pub const MILLIMQTY: Balance = 1_000 * MICROMQTY;
 pub const MQTY: Balance = 1_000 * MILLIMQTY;
 
 pub const EXISTENTIAL_DEPOSIT: Balance = MILLIMQTY;
 
+// SBP-M2 review: move to runtime/common to standardise across devnet/mainnet
 pub const fn deposit(items: u32, bytes: u32) -> Balance {
 	(items as Balance * 20 * MQTY + (bytes as Balance) * 100 * MICROMQTY) / 100
 }
@@ -234,6 +238,7 @@ pub fn native_version() -> NativeVersion {
 	NativeVersion { runtime_version: VERSION, can_author_with: Default::default() }
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const Version: RuntimeVersion = VERSION;
 
@@ -325,6 +330,7 @@ impl pallet_timestamp::Config for Runtime {
 	type WeightInfo = ();
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const UncleGenerations: u32 = 0;
 }
@@ -334,6 +340,7 @@ impl pallet_authorship::Config for Runtime {
 	type EventHandler = (CollatorSelection,);
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const ExistentialDeposit: Balance = EXISTENTIAL_DEPOSIT;
 }
@@ -356,6 +363,7 @@ impl pallet_balances::Config for Runtime {
 	type MaxFreezes = ConstU32<0>;
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const AssetDeposit: Balance = 10 * MQTY;
 	pub const StringLimit: u32 = 50;
@@ -390,6 +398,7 @@ impl pallet_assets::Config for Runtime {
 	type BenchmarkHelper = ();
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	/// Relay Chain `TransactionByteFee` / 10
 	pub const TransactionByteFee: Balance = 10 * MICROMQTY;
@@ -413,11 +422,13 @@ impl pallet_utility::Config for Runtime {
 	type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const ReservedXcmpWeight: Weight = MAXIMUM_BLOCK_WEIGHT.saturating_div(4);
 	pub const ReservedDmpWeight: Weight = MAXIMUM_BLOCK_WEIGHT.saturating_div(4);
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 /// Maximum number of blocks simultaneously accepted by the Runtime, not yet included
 /// into the relay chain.
 const UNINCLUDED_SEGMENT_CAPACITY: u32 = 1;
@@ -467,6 +478,7 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
 	type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) *
 	RuntimeBlockWeights::get().max_block;
@@ -486,6 +498,7 @@ impl pallet_scheduler::Config for Runtime {
 	type Preimages = Preimage;
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const Period: u32 = 6 * HOURS;
 	pub const Offset: u32 = 0;
@@ -511,6 +524,7 @@ impl pallet_sudo::Config for Runtime {
 	type WeightInfo = pallet_sudo::weights::SubstrateWeight<Runtime>;
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const CouncilMotionDuration: BlockNumber = 7 * DAYS;
 	pub const CouncilMaxProposals: u32 = 10;
@@ -531,6 +545,7 @@ impl pallet_collective::Config<CouncilCollective> for Runtime {
 	type MaxProposalWeight = MaxCollectivesProposalWeight;
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	// One storage item; key size is 32; value is size 4+4+16+32 bytes = 56 bytes.
 	pub const DepositBase: Balance = deposit(1, 88);
@@ -548,6 +563,7 @@ impl pallet_multisig::Config for Runtime {
 	type WeightInfo = pallet_multisig::weights::SubstrateWeight<Runtime>;
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const PreimageBaseDeposit: Balance = deposit(2, 64);
 	pub const PreimageByteDeposit: Balance = deposit(0, 1);
@@ -574,6 +590,7 @@ impl pallet_aura::Config for Runtime {
 	type AllowMultipleBlocksPerSlot = ConstBool<false>;
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const PotId: PalletId = PalletId(*b"PotStake");
 	pub const MaxCandidates: u32 = 1000;
@@ -584,6 +601,7 @@ parameter_types! {
 	pub const StakingAdminBodyId: BodyId = BodyId::Defense;
 }
 
+// SBP-M2 review: move duplicate type alias to runtime/common to standardise across devnet/mainnet
 /// We allow root and the StakingAdmin to execute privileged collator selection operations.
 pub type CollatorSelectionUpdateOrigin = EitherOfDiverse<
 	EnsureRoot<AccountId>,
@@ -666,6 +684,7 @@ impl pallet_nfts::Config for Runtime {
 	type Locker = ();
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const NftFractionalizationPalletId: PalletId = PalletId(*b"fraction");
 	pub FractionalizedAssetSymbol: BoundedVec<u8, StringLimit> = (*b"FRAC").to_vec().try_into().expect("bad nft-fractionalization asset symbol");
@@ -699,6 +718,7 @@ impl pallet_nft_fractionalization::Config for Runtime {
 	type WeightInfo = pallet_nft_fractionalization::weights::SubstrateWeight<Runtime>;
 }
 
+// SBP-M2 review: move duplicate constants to runtime/common to standardise across devnet/mainnet
 parameter_types! {
 	pub const ProposalBond: Permill = Permill::from_percent(5);
 	pub const ProposalBondMinimum: Balance = 1 * MQTY;
@@ -795,6 +815,7 @@ mod benches {
 		[pallet_session, SessionBench::<Runtime>]
 		[pallet_scheduler, Scheduler]
 		[pallet_timestamp, Timestamp]
+		// SBP-M2 review: missing [pallet_treasury, Treasury] as per mainnet runtime
 		[pallet_collator_selection, CollatorSelection]
 		[pallet_multisig, Multisig]
 		[pallet_preimage, Preimage]
@@ -804,6 +825,7 @@ mod benches {
 		[cumulus_pallet_xcmp_queue, XcmpQueue]
 		// SBP-M1 review: add missing pallets: benchmarks should be re-run on reference hardware based on how they are configured/used by your runtime
 		// TODO (@khssnv): consider reference hardware and re-run benchmarks
+		// SBP-M2 review: add all pallets defined within construct_runtime! which have benchmarks defined - e.g. cumulus_pallet_parachain_system, treasury, sudo etc missing
 	);
 }
 

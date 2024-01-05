@@ -9,6 +9,7 @@ source ~/.cargo/env
 Ubuntu: 
 ```sh
 sudo apt update
+# SBP-M2 review: missing protobuf-compiler
 sudo apt install -y cmake pkg-config libssl-dev git gcc build-essential git clang libclang-dev
 ```
 Arch Linux:
@@ -23,8 +24,10 @@ brew update
 brew install openssl cmake llvm
 ```
 
+# SBP-M2 review: use stable
 - ### Install the `wasm` target and the `nightly` toolchain for rust
 
+# SBP-M2 review: use stable
 ```sh
 rustup update nightly
 rustup target add wasm32-unknown-unknown --toolchain nightly

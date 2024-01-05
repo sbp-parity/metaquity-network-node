@@ -35,6 +35,7 @@ mainnet-runtime = { path = "runtime/mainnet" }
 runtime-common = { path = "runtime/common", default-features = false }
 
 # Substrate
+# SBP-M2 review: update to recent version of Polkadot SDK - v1.5 current release
 frame-benchmarking = { version = "24.0.0", default-features = false }
 frame-benchmarking-cli = { version = "28.0.0" }
 frame-executive = { version = "24.0.0", default-features = false }
@@ -138,4 +139,5 @@ xcm-builder = { package = "staging-xcm-builder", version = "3.0.0", default-feat
 xcm-executor = { package = "staging-xcm-executor", version = "3.0.0", default-features = false }
 
 # SBP-M1 review: add integration tests to ensure runtime functionality works as expected. Suggested tools include zombienet, parachains-integration-tests, chopsticks as applicable.
+# SBP-M2 review: some integration tests have been added in the upstream extended-parachain-template, consider adding along with some specific to your use cases
 # TODO (@khssnv): zombienet added, consider parachains-integration-tests and chopsticks
