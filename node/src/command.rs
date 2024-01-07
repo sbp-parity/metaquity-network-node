@@ -10,6 +10,7 @@ use sc_cli::SubstrateCli;
 use sc_service::PartialComponents;
 use sp_keyring::Sr25519Keyring;
 
+// SBP-M2 review: deprecated, removed after Jan 24
 #[cfg(feature = "try-runtime")]
 use try_runtime_cli::block_building_info::timestamp_with_aura_info;
 
@@ -171,6 +172,7 @@ pub fn run() -> sc_cli::Result<()> {
 				}
 			})
 		},
+		// SBP-M2 review: deprecated, update with deprecation notice
 		#[cfg(feature = "try-runtime")]
 		Some(Subcommand::TryRuntime(cmd)) => {
 			use crate::service::ExecutorDispatch;

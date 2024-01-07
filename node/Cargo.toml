@@ -22,6 +22,7 @@ path = "src/main.rs"
 clap = { version = "4.4.2", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"]}
 
+# SBP-M2 review: update to recent version (Substrate within Polkadot SDK now at 1.5)
 sc-cli = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
 sp-core = { version = "21.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
 sc-executor = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
@@ -48,6 +49,7 @@ pallet-transaction-payment = { version = "4.0.0-dev", default-features = false, 
 
 # These dependencies are used for the node template's RPCs
 jsonrpsee = { version = "0.16.2", features = ["server"] }
+# SBP-M2 review: update to recent version (Substrate within Polkadot SDK now at 1.5)
 sp-api = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
 sc-rpc-api = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
 sp-blockchain = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
@@ -57,6 +59,7 @@ substrate-frame-rpc-system = { version = "4.0.0-dev", git = "https://github.com/
 pallet-transaction-payment-rpc = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
 
 # These dependencies are used for runtime benchmarking
+# SBP-M2 review: update to recent version (Substrate within Polkadot SDK now at 1.5)
 frame-benchmarking = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
 frame-benchmarking-cli = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
 
@@ -64,9 +67,11 @@ frame-benchmarking-cli = { version = "4.0.0-dev", git = "https://github.com/pari
 metaquity-runtime = { version = "0.1.0", path = "../runtime" }
 
 # CLI-specific dependencies
+# SBP-M2 review: update to recent version (Substrate within Polkadot SDK now at 1.5)
 try-runtime-cli = { version = "0.10.0-dev", optional = true, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
 
 [build-dependencies]
+# SBP-M2 review: update to recent version (Substrate within Polkadot SDK now at 1.5)
 substrate-build-script-utils = { version = "3.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v1.0.0" }
 
 [features]

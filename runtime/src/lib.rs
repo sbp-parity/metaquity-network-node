@@ -268,8 +268,10 @@ impl pallet_sudo::Config for Runtime {
 
 parameter_types! {
 	// One storage item; key size is 32; value is size 4+4+16+32 bytes = 56 bytes.
+	// SBP-M2 review: not set correctly, no deposit taken for multisig execution which could lead to storage bloat
 	pub const DepositBase: Balance = 0;
 	// Additional storage item size of 32 bytes.
+	// SBP-M2 review: not set correctly, no deposit taken for multisig execution which could lead to storage bloat
 	pub const DepositFactor: Balance = 0;
 }
 
@@ -291,6 +293,7 @@ impl pallet_multisig::Config for Runtime {
 }
 
 parameter_types! {
+	// SBP-M2 review: not set correctly, amend to some rational amount
 	pub const MinVestedTransfer: Balance = 1;
 	pub UnvestedFundsAllowedWithdrawReasons: WithdrawReasons =
 		WithdrawReasons::except(WithdrawReasons::TRANSFER | WithdrawReasons::RESERVE);
@@ -368,6 +371,7 @@ mod benches {
 		[pallet_balances, Balances]
 		[pallet_timestamp, Timestamp]
 		[pallet_sudo, Sudo]
+		// SBP-M2 review: missing added pallets
 	);
 }
 
